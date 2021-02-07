@@ -218,15 +218,15 @@ function rep(x, lengths)
 end
 
 ## function to generate key file for simulated GBS data
-function getKeyFile(barcodeFile,numInd, numRow = 24, numCol = 16)
+function getKeyFile(barcodeFile,numInd, whichLane, numRow = 24, numCol = 16)
     barcode = readdlm(barcodeFile, '\t', header = false);
     barcodes = barcode[1:numInd];
-    lane = fill(1, numRow*numCol);
+    lane = fill(whichLane, numRow*numCol);
     row = reduce(vcat, rep(string.(['A':'P'...]), fill(numRow, numCol)));
     col = reduce(vcat, fill([1:numRow...],numCol));
     key = [fill("ABC12AAXX", numRow*numCol)[1:numInd] lane[1:numInd] barcode[1:numInd] [
     "Ind_" * string(i) for i = 1:(numInd)]  fill("Plate1", 384)[1:numInd] row[1:numInd] col[1:numInd]]
-    writedlm("keyFile.txt", key)
+    writedlm("keyFile_$whichLane.txt", key)
     barcodes
 end
 
@@ -252,84 +252,92 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
     snpGeno = getSNPGenotypes(ind)
     qtlGeno = getQTLGenotypes(ind)
     ## step 4: generate GBS data
-    numInd = size(ind,1) # number of individuals to be simulated
-    barcodes = getKeyFile(barcodeFile,numInd) # extract barcodes for GBS reads generation
-    snpGBS = Array{Int64}(undef,0) # empty array to store only SNP that found on GBS fragments
-    hapSize = Array{Int64}(undef,0) # empty array to store haplotype size
-    fragSNP = Array{Int64}(undef,0) # empty array to store GBS fragments (conataining SNPs) index
-    readDepth = Array{Int64}(undef,numInd,0) # empty array to store read Depth
-    snpDepth = Array{Int64}(undef,numInd,0) # empty array to store snp Depth
-    matDepth = Array{Int64}(undef,numInd,0) # empty array to store copyies of maternal haplotypes
-    patDepth = Array{Int64}(undef,numInd,0) # empty array to store copyies of paternal haplotypes
-    totalReads =  Array{String}(undef,0) # store simulated GBS reads
-    io = GZip.open("ABC12AAXX_1_fastq.txt.gz", "w") # output file
-    ## Let's party!!!
-    for c = 1:numChr
-        ## part a. extract fragments located in chromosome c
-        chr = findall(x -> x == c, GBSFrag.chr) # index fragments from chromosome c
-        numFrag = length(chr) # total number of selected GBS fragments
-        starts = GBSFrag.pos[chr] # starting position of selected GBS fragments
-        len = GBSFrag.len[chr] # length of selected GBS fragments
-        ends = starts + len[chr] .- 1 # ending position of selected GBS fragments
-        frags = GBSFrag.frag[chr] # select only fragments from chromosome c
-        ## part b. select SNPs only SNPs that captured by each GBS fragment and non-empty (containing SNP(s)) GBS fragments
-        snpSelected = [findall(x -> x == 1, (snpPos[c] .< ends[t]) .& (snpPos[c] .> starts[t])) for t = 1:numFrag]
-        fragSelected = findall(x -> x != [], [snpPos[c][snpSelected[t]] for t = 1:numFrag])
-        hapSizeChr = length.(snpSelected)[fragSelected] # number of SNPs within each non-empty GBS fragment
-        numSNPChr = sum(hapSizeChr) # total number of SNPs found on GBS fragments
-        numHapLoci = length(fragSelected) # total number of GBS fragments contating SNPs (or equivelently, number of shortHaps loci)
-        hapSize = [hapSize; hapSizeChr] # store haplotype size (number of SNPs per fragment)n
-        snpGBS = [snpGBS; [(reduce(vcat,snpSelected[fragSelected]) .+ [0;numFrag][c])]] # store SNPs only found on GBS fragments
-        fragSNP = [fragSNP; fragSelected .+ ifelse(c == 1,0,numFrag)] # store only GBS fragments containing SNPs
-        println("CHROMOSOME $c: Found $numSNPChr SNPs on $numHapLoci GBS fragments, with an average of $(round(mean(hapSizeChr);digits=2)) SNPs per GBS fragment.")
-        ## part c. sample read depth based on user-defined sequencing depth
-        cols = rand(Gamma(seqDepth * 0.5, 2), numHapLoci) # per locus depth
-        rows = reshape(rand(Gamma(seqDepth * 3, 1 / 3), numInd),numInd,1) # per sample depth
-        depth = (rows * cols') ./ seqDepth # depth matrix
-        readDepthChr = [rand(NegativeBinomial(depth[i, j], 0.5)) for i = 1:numInd, j = 1:numHapLoci] # read depth
-        snpDepthChr = transpose(reshape(vcat([rep(readDepthChr[i, :], collect(Iterators.flatten(hapSizeChr))) for i = 1:numInd]...), sum(hapSizeChr), numInd))# snp depth
-        matHapCopyChr = [rand(Binomial(readDepthChr[i,j])) for i = 1:numInd, j = 1:numHapLoci] # sample number of copies of marternal haplotypes
-        patHapCopyChr = readDepthChr - matHapCopyChr # compute number of copiesof parternal haplotypes
-        readDepth = [readDepth readDepthChr] # store read depth
-        snpDepth = [snpDepth snpDepthChr] # store snp depth
-        matDepth = [matDepth matHapCopyChr] # store number of copies of each maternal haplotypes
-        patDepth= [patDepth patHapCopyChr]  # store number of copies of each paternal haplotypes
-        ## part d. genearte GBS reads
-        for k in fragSelected
-            frag = frags[k] # extract kth fragment in chromsome c
-            sites = snpPos[c][snpSelected[k]] .- (starts[k].-1) # SNP sites on this GBS fragment
-            startPos = [1; sites .+ 1] # starting position of segments of the specified GBS fragment
-            endPos = [sites .- 1; len[k]] # ending position of segments of the specified GBS fragment
-            seg = [SubString(frag, startPos[j], endPos[j]) for j = 1:length(startPos)] # poistional info of small segments of the specified GBS fragment
-            bases = [split(frag[sites],"") split(map(x -> comp[x],frag[sites]),"")] # define SNPs (ref. allele = ref. allele found on the genome; alt. allele = complement of the ref. allele. E.g., A/T,C/G only)
-            hap =  haps[:,snpSelected[k]].+1 # extract shortHaps, i.e. short haplotypes defined by GBS fragmentation
-            if length(frag) < 101
-                stops = length(frag) # read the entire fragment if its less than 101 bp
-            else
-                stops = 101 # if the length of fragment is longer than 101, stop at 101
-            end
-            matHap =  [join([[seg[j] * bases[j,hap[i,j]] for j = 1:length(sites)]; seg[length(sites)+1]; re[1].overhang[1]])[1:stops] for i in 1:2:numInd*2] # genearte GBS reads from martenal haplotypes
-            patHap =  [join([[seg[j] * bases[j,hap[i,j]] for j = 1:length(sites)]; seg[length(sites)+1]; re[1].overhang[1]])[1:stops] for i in 2:2:numInd*2] # generate GBS reads from partenal haplotypes
-            matHapRevComp = [reverse(map(x -> comp[x], matHap[i]))[1:stops] for i in 1: numInd] # reverse complement GBS reads of maternal haplotypes
-            patHapRevComp = [reverse(map(x -> comp[x], patHap[i]))[1:stops] for i in 1: numInd] # reverse complement GBS reads of paternal haplotypes
-            matRead = barcodes .* matHap # attach barcodes to the GBS reads
-            patRead = barcodes .* patHap # attach barcodes to the GBS reads
-            matReadRevComp = barcodes .* matHapRevComp # attach barcodes to the GBS reads
-            patReadRevComp = barcodes .* patHapRevComp # attach barcodes to the GBS reads
-            ## replicate GBS reads
-            matCopyTotal = matHapCopyChr[:,  findall(x -> x == k, fragSelected)]
-            matCopy = [rand(Binomial(matCopyTotal[i])) for i in 1:numInd]
-            matCopyRevComp = matCopyTotal - matCopy
-            patCopyTotal = patHapCopyChr[:,  findall(x -> x == k, fragSelected)]
-            patCopy = [rand(Binomial(patCopyTotal[i])) for i in 1:numInd]
-            patCopyRevComp = patCopyTotal - patCopy
-            readGBS = collect(Iterators.flatten([[repeat([matRead[j]], matCopy[j]); repeat([matReadRevComp[j]], matCopyRevComp[j]); repeat([patRead[j]], patCopy[j]); repeat([patReadRevComp[j]], patCopyRevComp[j])] for j = 1:numInd]))
-            totalReads = [totalReads; shuffle(readGBS)]
+    totalInd = size(ind,1) # number of individuals to be simulated
+    numLane = ceil(totalInd)
+    for l in 1:numLane
+        if totalInd < 384*l
+            numInd = totalnd - 384*(l-1)
+        else
+            numInd = 384
         end
+        barcodes = getKeyFile(barcodeFile,numInd) # extract barcodes for GBS reads generation
+        snpGBS = Array{Int64}(undef,0) # empty array to store only SNP that found on GBS fragments
+        hapSize = Array{Int64}(undef,0) # empty array to store haplotype size
+        fragSNP = Array{Int64}(undef,0) # empty array to store GBS fragments (conataining SNPs) index
+        readDepth = Array{Int64}(undef,numInd,0) # empty array to store read Depth
+        snpDepth = Array{Int64}(undef,numInd,0) # empty array to store snp Depth
+        matDepth = Array{Int64}(undef,numInd,0) # empty array to store copyies of maternal haplotypes
+        patDepth = Array{Int64}(undef,numInd,0) # empty array to store copyies of paternal haplotypes
+        totalReads =  Array{String}(undef,0) # store simulated GBS reads
+        io = GZip.open("ABC12AAXX_1_fastq.txt.gz", "w") # output file
+        ## Let's party!!!
+        for c = 1:numChr
+            ## part a. extract fragments located in chromosome c
+            chr = findall(x -> x == c, GBSFrag.chr) # index fragments from chromosome c
+            numFrag = length(chr) # total number of selected GBS fragments
+            starts = GBSFrag.pos[chr] # starting position of selected GBS fragments
+            len = GBSFrag.len[chr] # length of selected GBS fragments
+            ends = starts + len[chr] .- 1 # ending position of selected GBS fragments
+            frags = GBSFrag.frag[chr] # select only fragments from chromosome c
+            ## part b. select SNPs only SNPs that captured by each GBS fragment and non-empty (containing SNP(s)) GBS fragments
+            snpSelected = [findall(x -> x == 1, (snpPos[c] .< ends[t]) .& (snpPos[c] .> starts[t])) for t = 1:numFrag]
+            fragSelected = findall(x -> x != [], [snpPos[c][snpSelected[t]] for t = 1:numFrag])
+            hapSizeChr = length.(snpSelected)[fragSelected] # number of SNPs within each non-empty GBS fragment
+            numSNPChr = sum(hapSizeChr) # total number of SNPs found on GBS fragments
+            numHapLoci = length(fragSelected) # total number of GBS fragments contating SNPs (or equivelently, number of shortHaps loci)
+            hapSize = [hapSize; hapSizeChr] # store haplotype size (number of SNPs per fragment)n
+            snpGBS = [snpGBS; [(reduce(vcat,snpSelected[fragSelected]) .+ [0;numFrag][c])]] # store SNPs only found on GBS fragments
+            fragSNP = [fragSNP; fragSelected .+ ifelse(c == 1,0,numFrag)] # store only GBS fragments containing SNPs
+            println("CHROMOSOME $c: Found $numSNPChr SNPs on $numHapLoci GBS fragments, with an average of $(round(mean(hapSizeChr);digits=2)) SNPs per GBS fragment.")
+            ## part c. sample read depth based on user-defined sequencing depth
+            cols = rand(Gamma(seqDepth * 0.5, 2), numHapLoci) # per locus depth
+            rows = reshape(rand(Gamma(seqDepth * 3, 1 / 3), numInd),numInd,1) # per sample depth
+            depth = (rows * cols') ./ seqDepth # depth matrix
+            readDepthChr = [rand(NegativeBinomial(depth[i, j], 0.5)) for i = 1:numInd, j = 1:numHapLoci] # read depth
+            snpDepthChr = transpose(reshape(vcat([rep(readDepthChr[i, :], collect(Iterators.flatten(hapSizeChr))) for i = 1:numInd]...), sum(hapSizeChr), numInd))# snp depth
+            matHapCopyChr = [rand(Binomial(readDepthChr[i,j])) for i = 1:numInd, j = 1:numHapLoci] # sample number of copies of marternal haplotypes
+            patHapCopyChr = readDepthChr - matHapCopyChr # compute number of copiesof parternal haplotypes
+            readDepth = [readDepth readDepthChr] # store read depth
+            snpDepth = [snpDepth snpDepthChr] # store snp depth
+            matDepth = [matDepth matHapCopyChr] # store number of copies of each maternal haplotypes
+            patDepth = [patDepth patHapCopyChr]  # store number of copies of each paternal haplotypes
+            ## part d. genearte GBS reads
+            for k in fragSelected
+                frag = frags[k] # extract kth fragment in chromsome c
+                sites = snpPos[c][snpSelected[k]] .- (starts[k].-1) # SNP sites on this GBS fragment
+                startPos = [1; sites .+ 1] # starting position of segments of the specified GBS fragment
+                endPos = [sites .- 1; len[k]] # ending position of segments of the specified GBS fragment
+                seg = [SubString(frag, startPos[j], endPos[j]) for j = 1:length(startPos)] # poistional info of small segments of the specified GBS fragment
+                bases = [split(map(x -> nucl[nucl[x]],frag[sites]),"") split(map(x -> comp[nucl[x]],frag[sites]),"")] # define SNPs (ref. allele = ref. allele found on the genome; alt. allele = complement of the ref. allele. E.g., A/T,C/G only)
+                hap =  haps[:,snpSelected[k]].+1 # extract shortHaps, i.e. short haplotypes defined by GBS fragmentation
+                if length(frag) < 101
+                    stops = length(frag) # read the entire fragment if its less than 101 bp
+                else
+                    stops = 101 # if the length of fragment is longer than 101, stop at 101
+                end
+                matHap =  [join([[seg[j] * bases[j,hap[i,j]] for j = 1:length(sites)]; seg[length(sites)+1]; re[1].overhang[1]])[1:stops] for i in 1:2:numInd*2] # genearte GBS reads from martenal haplotypes
+                patHap =  [join([[seg[j] * bases[j,hap[i,j]] for j = 1:length(sites)]; seg[length(sites)+1]; re[1].overhang[1]])[1:stops] for i in 2:2:numInd*2] # generate GBS reads from partenal haplotypes
+                matHapRevComp = [reverse(map(x -> comp[nucl[x]], matHap[i]))[1:stops] for i in 1: numInd] # reverse complement GBS reads of maternal haplotypes
+                patHapRevComp = [reverse(map(x -> comp[nucl[x]], patHap[i]))[1:stops] for i in 1: numInd] # reverse complement GBS reads of paternal haplotypes
+                matRead = barcodes .* matHap # attach barcodes to the GBS reads
+                patRead = barcodes .* patHap # attach barcodes to the GBS reads
+                matReadRevComp = barcodes .* matHapRevComp # attach barcodes to the GBS reads
+                patReadRevComp = barcodes .* patHapRevComp # attach barcodes to the GBS reads
+                ## replicate GBS reads
+                matCopyTotal = matHapCopyChr[:,  findall(x -> x == k, fragSelected)]
+                matCopy = [rand(Binomial(matCopyTotal[i])) for i in 1:numInd]
+                matCopyRevComp = matCopyTotal - matCopy
+                patCopyTotal = patHapCopyChr[:,  findall(x -> x == k, fragSelected)]
+                patCopy = [rand(Binomial(patCopyTotal[i])) for i in 1:numInd]
+                patCopyRevComp = patCopyTotal - patCopy
+                readGBS = collect(Iterators.flatten([[repeat([matRead[j]], matCopy[j]); repeat([matReadRevComp[j]], matCopyRevComp[j]); repeat([patRead[j]], patCopy[j]); repeat([patReadRevComp[j]], patCopyRevComp[j])] for j = 1:numInd]))
+                totalReads = [totalReads; shuffle(readGBS)]
+            end
+        end
+    #    totalReads = totalReads[:, 1])
+        writedlm(io,["@SIM001:001:ABC12AAXX:1:0000:0000:$r 1:N:0:0\n" * totalReads[r] * "\n+\n" * repeat("I", length(totalReads[r])) for r in 1:length(totalReads)],quotes = false)
+        close(io)
     end
-#    totalReads = totalReads[:, 1])
-    writedlm(io,["@SIM001:001:ABC12AAXX:1:0000:0000:$r 1:N:0:0\n" * totalReads[r] * "\n+\n" * repeat("I", length(totalReads[r])) for r in 1:length(totalReads)],quotes = false)
-    close(io)
     ## step4. returen GBS data info
     ## define QTL and SNP datasets [ID chromosome position allele_frequency]
     qtlData = [["QTL_"*string(i) for i in 1:totalQTL] reduce(vcat,[repeat([i],inner=numQTL[i]) for i in 1:numChr]) reduce(vcat, qtlPos) reduce(vcat, qtlAF)]
@@ -355,7 +363,7 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
     if plotOutput == true
         histogram(snpAF,normalize = :probability, title = "SNP Allele Frequency", label = "",fmt = :png); savefig("snpAF")
         histogram(mean(snpGeno,dims=1),normalize = :probability, title = "SNP Allele Frequency (Genotypes)", label = "",fmt = :png); savefig("snpGenoAF")
-        # plot(snpAF,mean(snpGeno,dims=1), title = "Sampled Allele Frequency vs. Simulated Allele Frequency (Genotypes)", label = "",fmt = :png); savefig("snpAFvsGenoAF")
+        plot(snpAF,mean(snpGeno,dims=1), title = "Sampled Allele Frequency vs. Simulated Allele Frequency (Genotypes)", label = "",fmt = :png); savefig("snpAFvsGenoAF")
         histogram(qtlAF,normalize = :probability, title = "QTL Allele Frequency", label = "",fmt = :png); savefig("qtlAF")
         histogram(snpDataGBS[:,4], normalize = :probability, title = "GBS SNP Allele Frequency", label = "",fmt = :png); savefig("snpAFGBS")
         histogram(hapSize, normalize = :probability, title = "Number of SNP per GBS Fragment",label = "",fmt = :png); savefig("snpPerTag")

@@ -42,10 +42,10 @@ MspI = restrictionEnzyme("MspI", ["CCGG"],[2],["CGG"]); # Poland et al. 2012
 
 
 ## nucleotides and its reverse complements
-nucl = Dict('R' => rand(['A', 'G']), 'Y' => rand(['C', 'T']), 'S' => rand(['G', 'C']), 'W' => rand(['A', 'T']),
+nucl = Dict('A' => 'A', 'C' => 'C','G' => 'G','T' => 'T','N' => 'N','R' => rand(['A', 'G']), 'Y' => rand(['C', 'T']), 'S' => rand(['G', 'C']), 'W' => rand(['A', 'T']),
     'K' => rand(['G', 'T']), 'M' => rand(['A', 'C']), 'B' => rand(['C', 'G', 'T']), 'D' => rand(['A', 'G', 'T']),
     'H' => rand(['A', 'C', 'T']), 'V' => rand(['A', 'C', 'G'])); # randomly assign IUPAC codes for uncertain ones in the assembly
-comp = Dict('A' => 'T', 'C' => 'G','G' => 'C','T' => 'A'); # complements of DNA nucleotides
+comp = Dict('A' => 'T', 'C' => 'G','G' => 'C','T' => 'A','N' => 'N'); # complements of DNA nucleotides
 
 
 ## function to split sequence
@@ -198,8 +198,15 @@ function digestGenome(genofile::String, re::Array{restrictionEnzyme,1}, useChr::
         GBSFragChr = findall(x -> x == c, GBSFrag.chr)
         GBSFragPos = GBSFrag.pos[GBSFragChr]
         GBSFragLen = GBSFrag.len[GBSFragChr]
-        GBSFragWin = [findall(x -> x <= winEnds[w] && x >= winStarts[w], GBSFragPos) for w in 1:numWin]
-        GBSFragCoverWin = [sum(GBSFragLen[GBSFragWin[w]])/1e6 for w in 1:numWin]
+        GBSFragCoverWin = Array{Float64}(undef,numWin)
+        for w in 1:numWin
+            GBSFragWin = findall(x -> x <= winEnds[w] && x >= winStarts[w], GBSFragPos)
+            if size(GBSFragWin,1) != 0
+                GBSFragCoverWin[w] = sum(GBSFragLen[GBSFragWin])/1e6
+            else
+                GBSFragCoverWin[w] = 0
+            end
+        end
         GBSFragCover = [GBSFragCover; GBSFragCoverWin]
         GBSFragWinEnds = [GBSFragWinEnds; winEnds]
         GBSFragWinStatrs = [GBSFragWinStatrs; winStarts]
@@ -209,8 +216,8 @@ function digestGenome(genofile::String, re::Array{restrictionEnzyme,1}, useChr::
     println("INFO: Expected sequencing coverage based on $numFragSelected selected GBS fragments is approximately $(round(mean(GBSFragCover)*100;digits=2))%.")
     ## module 4: writing out and plotting fragment-szie distribution and GBS coverage if required
     if plotOutput == true
-        histogram(fragRaw[:, 4], normalize = :probability, title = "Size Distribution of Raw GBS Fragements", label = "", fmt = :png); savefig("RawFragSize")
-        histogram(fragGBS[:,4], normalize = :probability, title = "Size Distribution of GBS Fragements (after Size-Selection)", label = "", fmt = :png); savefig("GBSFragSize")
+        histogram(fragRaw[:, 4], normalize = :probability, title = "Size Distribution of Raw GBS Fragments", label = "", fmt = :png); savefig("RawFragSize")
+        histogram(fragGBS[:,4], normalize = :probability, title = "Size Distribution of GBS Fragments (after Size-Selection)", label = "", fmt = :png); savefig("GBSFragSize")
         histogram(GBSFragCover, normalize = :probability, title = "Coverage of GBS Fragments per Mb", label = "", fmt = :png); savefig("GBSCoverage")
     end
     if writeOutput == true
