@@ -1,23 +1,14 @@
-SimGBS.jl
+SimGBS: A Julia Package for Simulating Genotyping-by-Sequencing (GBS) Data  
 ================
 
-GitHub: 
+[![Build Status](https://travis-ci.com/kanji709/SimGBS.jl.svg?branch=master)](https://travis-ci.com/kanji709/SimGBS.jl)
 ![GitHub repo size](https://img.shields.io/github/repo-size/kanji709/SimGBS.jl?style=flat-square)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/kanji709/SimGBS.jl?color=purple&style=flat-square)
 [![GitHub issues](https://img.shields.io/github/issues/AgResearch/snpGBS)](https://github.com/kanji709/SimGBS.jl/issues)
-
-General: 
-[![Build Status](https://travis-ci.com/kanji709/SimGBS.jl.svg?branch=master)](https://travis-ci.com/kanji709/SimGBS.jl)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fkanji709%2FSimGBS.jl&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=true)](https://hits.seeyoufarm.com)
-
-License: [![GitHub license](https://img.shields.io/github/license/AgResearch/snpGBS?style=flat-square)](https://github.com/AgResearch/snpGBS/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/AgResearch/snpGBS?style=flat-square)](https://github.com/AgResearch/snpGBS/blob/main/LICENSE)
  
 
-Documentation: [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://YOUR_USERNAME.github.io/MyAwesomePackage.jl/stable)
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://YOUR_USERNAME.github.io/MyAwesomePackage.jl/dev)
-
-
-`SimGBS` is a Julia package for simulating Genotyping-by-Sequencing (GBS) data.  
 
 
 ## Installation
@@ -62,6 +53,7 @@ etc.
 
 
 ## Overview
+
 
 
 ## Citation
