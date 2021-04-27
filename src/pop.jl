@@ -115,9 +115,9 @@ function changingPopSize(founders, endSize::Int64, numGen::Int64)
 end
 
 ## function to generate popluation at a FIXED size (= $numGenFinal) for a certain number (=$numGen) of geneartions
-function constantPopSize(founders, numGen::Int64, numGenFinal::Int64, numIndFinal::Int64, useWeights::Array{Float64})
+function constantPopSize(founders, numGen::Int64, numGenFinal::Int64, numSampleFinal::Int64, useWeights::Array{Float64})
     parents = copy(founders)
-    final = Array{individual}(undef, numIndFinal)
+    final = Array{individual}(undef, numSampleFinal)
     for gen = 1:numGen-numGenFinal
         offSpring = [sampleOffspring(parents[sample(1:(size(parents, 1)), 1)[1]], parents[sample(1:(size(parents, 1)), 1)[1]]) for i = 1:size(founders, 1)]
         parents = deepcopy(offSpring)
@@ -130,7 +130,7 @@ function constantPopSize(founders, numGen::Int64, numGenFinal::Int64, numIndFina
     else
         useWeights = repeat([1 / numGenFinal], numGenFinal)
     end
-    index = sample([1:numGenFinal...],Weights(useWeights),numIndFinal)
+    index = sample([1:numGenFinal...],Weights(useWeights),numSampleFinal)
     count = [sum(index .== c) for c in 1:numGenFinal]
     for ind = 1:numGenFinal
         offSpring = [sampleOffspring(parents[sample(1:(size(parents, 1)), 1)[1]], parents[sample(1:(size(parents, 1)), 1)[1]]) for i = 1:size(founders, 1)]
