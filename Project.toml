@@ -14,7 +14,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 Compat = "3.20.0"
-Distributions = "0.23, 0.24"
+Distributions = "0.23, 0.24, 0.25"
 GZip = "0.5.1"
 Plots = "1.6"
 StatsBase = "0.33"
