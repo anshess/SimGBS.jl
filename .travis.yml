@@ -1,7 +1,7 @@
 language: julia
 
 julia:
-  - 1.0
+  - 1.5
   - 1
 os:
   - linux
@@ -14,4 +14,3 @@ notifications:
 
 after_success:
   - julia -e 'import Pkg; Pkg.add("Coverage");cd(Pkg.dir("SimGBS")); using Coverage; Codecov.submit(Codecov.process_folder())'
-
