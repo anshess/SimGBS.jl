@@ -33,10 +33,6 @@ julia> Pkg.add("SimGBS")
 
 ### Examples
 
-```@docs
-GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNPdensity::Float64, winSize::Int64, muAlleleFreq::Float64,sigmasqAlleleFreq::Float64, re, meanDepth::Float64,   barcodeFile::String, plotOutput::Bool, writeOutput::Bool,outputOnlyGBS::Bool)
-```
-
 
 
 ## Arguments
@@ -51,3 +47,10 @@ GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNPdensity::
 * `barcodeFile`: File contains GBS barcodes
 * `plotOutput`: Logical, TRUE if graphical outputs are required
 * `writeOutput`: Logical, TRUE if text outputs are required
+
+
+### Outputs 
+
+
+### Downstream Analyses 
+
