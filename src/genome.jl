@@ -1,4 +1,4 @@
-## define restriction enzyme [name, cut-sequence, cut-site, overhang]
+"restriction enzyme used for digesting genome [name, cut-sequence, cut-site, overhang]"
 mutable struct restrictionEnzyme
     name::String # name of the restriction enzyme
     cutSeq::Array{String} # recognition sequence
@@ -14,14 +14,18 @@ MspI = restrictionEnzyme("MspI", ["CCGG"], [2], ["CGG"]); # Poland et al. 2012
 PstI_MspI = restrictionEnzyme("PstI-MspI", ["CTGCAG","CCGG"], [2,2], ["TGCA", "CGG"]); # Poland et al. 2012
 
 
-## nucleotides and its reverse complements
+## nucleotides and its complements
+"nucleotides"
 nucl = Dict('A' => 'A', 'C' => 'C','G' => 'G','T' => 'T','N' => 'N','R' => rand(['A', 'G']), 'Y' => rand(['C', 'T']), 'S' => rand(['G', 'C']), 'W' => rand(['A', 'T']),
     'K' => rand(['G', 'T']), 'M' => rand(['A', 'C']), 'B' => rand(['C', 'G', 'T']), 'D' => rand(['A', 'G', 'T']),
     'H' => rand(['A', 'C', 'T']), 'V' => rand(['A', 'C', 'G'])); # randomly assign IUPAC codes for uncertain ones in the assembly
+
+"complements"
 comp = Dict('A' => 'T', 'C' => 'G','G' => 'C','T' => 'A','N' => 'N'); # complements of DNA nucleotides
 
 
-## function to split sequence
+
+"split sequence by any specific sequence"
 function splitSequence(seq, cutSeq, startSeq, endSeq)
     cuts = split(uppercase(seq), cutSeq) # split DNA sequence
     if length(cuts) > 1
@@ -33,7 +37,7 @@ function splitSequence(seq, cutSeq, startSeq, endSeq)
     cuts
 end
 
-## function to digest sequence using specified restriction enzyme
+"digest sequence using specified restriction enzyme"
 function digest(sequence, re::restrictionEnzyme)
     cutSeq = re.cutSeq
     cutPlace = re.cutPlace
@@ -55,7 +59,7 @@ function digest(sequence, re::restrictionEnzyme)
     sequence
 end
 
-## function to implement double-digestion (or enzyme has more than one recongnition site)
+"double-digestion (or enzyme has more than one recongnition site)"
 function digestSecond(sequence, re::restrictionEnzyme)
     cutSeq = re.cutSeq
     cutPlace = re.cutPlace
