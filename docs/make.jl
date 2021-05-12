@@ -1,10 +1,9 @@
-using Documenter
-using SimGBS
+push!(LOAD_PATH,"../src/")
+
+using Documenter, SimGBS
 
 makedocs(
-    sitename = "SimGBS",
-    format = Documenter.HTML(),
-    modules = [SimGBS]
+    sitename = "SimGBS.jl"
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.

@@ -1,31 +1,3 @@
-"""
-digestGenome(genofile, re, useChr, useChrLen, lower ,upper, plotOutput, writeOutput);
-
-Perform in slico digestion using restriction enzyme and generate GBS fragments.
-
-This function uses specified restriction enzyme(s) to digest genome and therefore generate GBS fragments. Fragment size-selection step is also included.
-
-# Arguments
-* `genofile`: Reference genome of targeted species
-* `re`: Restriction enzyme to be used in simulation
-* `useChr`: Either the number of chromosome(s) or a set of chromosome(s) to be simulated
-* `useChrLen`: The length of chromsome(s) in cM to be simulated, otherwise using entire chromosome
-* `lower`: Lower threshold of fragment size-selection
-* `upper`: Upper threshold of fragment size-selection
-* `winSize`: Size of window and bin for sampling SNP positions
-* `winSize`: Size of window and bin for sampling SNP positions
-* `plotOutput`: Logical, TRUE if graphical outputs are required
-* `writeOutput`: Logical, TRUE if text outputs are required
-
-# Notes
-* Future version to include 1. cut-site variation; 2. random sampling of GBS fragments
-
-# Examples
-```julia
-julia> digestGenome("fake.fa.gz", [ApeKI], [1], Array{Float64}(undef,0), 65 ,195, true, true)
-```
-"""
-## This file contains functions and types used for in slico digestioon
 ## define restriction enzyme [name, cut-sequence, cut-site, overhang]
 mutable struct restrictionEnzyme
     name::String # name of the restriction enzyme
@@ -113,7 +85,31 @@ function digestSecond(sequence, re::restrictionEnzyme)
     goodSeq
 end
 
-## function to implement virtual digestion
+"""
+	digestGenome(genofile, re, useChr, useChrLen, lower ,upper, plotOutput, writeOutput)
+
+Perform virtual digestion using restriction enzyme and generate GBS fragments.
+
+This function uses specified restriction enzyme(s) to digest genome and therefore generate GBS fragments. Fragment size-selection step is also included.
+
+# Arguments
+- `genofile`: Reference genome of targeted species
+- `re`: Restriction enzyme to be used in simulation
+- `useChr`: Either the number of chromosome(s) or a set of chromosome(s) to be simulated
+- `useChrLen`: The length of chromsome(s) in cM to be simulated, otherwise using entire chromosome
+- `lower`: Lower threshold of fragment size-selection
+- `upper`: Upper threshold of fragment size-selection
+- `winSize`: Size of window and bin for sampling SNP positions
+- `winSize`: Size of window and bin for sampling SNP positions
+- `plotOutput`: Logical, TRUE if graphical outputs are required
+- `writeOutput`: Logical, TRUE if text outputs are required
+...
+
+# Examples
+```julia
+julia> digestGenome("fake.fa.gz", [ApeKI], [1], Array{Float64}(undef,0), 65 ,195, true, true)
+```
+"""
 function digestGenome(genofile::String, re::Array{restrictionEnzyme,1}, useChr::Array{Int64}, useChrLen::Array{Float64}, lowerThresh::Int64, upperThresh::Int64, plotOutput::Bool , writeOutput::Bool)
     ## module 1: read genome and cut it into fragments
     genome = readdlm(GZip.open(genofile), '\t') # load genome
