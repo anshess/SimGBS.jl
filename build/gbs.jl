@@ -1,5 +1,4 @@
-## This file contains functions and types used for GBS data geneartion
-"function yp sample QTL positions (randomly across the genome)"
+## function to sample QTL positions (randomly across the genome)
 function sampleQTLPosition(totalQTL::Int64)
     println("INFO: A total of $totalQTL QTLs are sampled randomly across $numChr chromosome(s).")
     qtlChr = sample([1:numChr...], totalQTL);
@@ -8,7 +7,7 @@ function sampleQTLPosition(totalQTL::Int64)
     qtlPos
 end
 
-"function to sample SNP positions (either randomly or via a two-stage appraoch)"
+## function to sample SNP positions (either randomly or via a two-stage appraoch)
 function sampleSNPPosition(totalSNP::Int64, winSize::Int64, mu::Float64, sigmasq::Float64)
     if totalSNP != 0 ## set totalSNP = 0 to trigger option 1
         println("INFO: A total of $totalSNP SNPs are sampled randomly across $numChr chromosome(s).")
@@ -39,7 +38,7 @@ function sampleSNPPosition(totalSNP::Int64, winSize::Int64, mu::Float64, sigmasq
     snpPos
 end
 
-"function to sample variants (incl. SNP and QTL) allele frequency"
+## function to sample variants (incl. SNP and QTL) allele frequency
 function sampleAlleleFrequency(numLoci::Array{Int64}, mu::Float64,sigmasq::Float64)
     alpha = 0.953 # (mu * (1 - mu) / sigmasq -1) * mu # (-beta * mu) / (mu - 1)
     beta = 3.631 #(mu * (1 - mu) / sigmasq -1) * (1 - mu) # ((mu - 1) * (mu^2 - mu + sigmasq)) / (sigmasq)
@@ -50,7 +49,7 @@ function sampleAlleleFrequency(numLoci::Array{Int64}, mu::Float64,sigmasq::Float
     af
 end
 
-"function to generate foudner SNPs"
+## function to generate foudner SNPs
 function makeFounderSNPs(founders, snpAF::Array{Any,1})
     for c = 1:size(snpAF, 1)
         numHaps = 2 * size(founders, 1)
@@ -63,7 +62,7 @@ function makeFounderSNPs(founders, snpAF::Array{Any,1})
     founders
 end
 
-"function to generate foudner QTLs"
+## function to generate foudner QTLs
 function makeFounderQTL(founders, qtlAF::Array{Any,1})
     for c = 1:size(qtlAF, 1)
         numHaps = 2 * size(founders, 1)
@@ -76,7 +75,7 @@ function makeFounderQTL(founders, qtlAF::Array{Any,1})
     founders
 end
 
-"function to fill haplotypes at individual level"
+## function to fill haplotypes at individual level
 function fillHaplotypes(samples, founders, numChr::Int64, snpPos, qtlPos::Array{Array{Int64,1},1})
     if size(founders[1].MatChrs[1].QTL, 1) == 0
         error("Haplotypes not made - need to run makeFounderSNPs(founders,snpAF)")
@@ -113,7 +112,7 @@ function fillHaplotypes(samples, founders, numChr::Int64, snpPos, qtlPos::Array{
 end
 
 
-"function to extract haplotypes from each (diploid x2) individual"
+## function to extract haplotypes from each (diploid x2) individual
 function getHaplotypes(samples = ind)
     numInd = size(samples, 1)
     numChr = size(samples[1].MatChrs, 1)
@@ -134,7 +133,7 @@ function getHaplotypes(samples = ind)
     haplotypes
 end
 
-"function to geneate SNP genotypes"
+## function to geneate SNP genotypes
 function getSNPGenotypes(samples = ind)
     numChr = size(samples[1].MatChrs, 1)
     numSNP = [size(samples[1].MatChrs[i].SNPs, 1) for i = 1:numChr]
@@ -152,7 +151,7 @@ function getSNPGenotypes(samples = ind)
     genotypes
 end
 
-"function to geneate QTL genotypes"
+## function to geneate QTL genotypes
 function getQTLGenotypes(samples = ind)
     numChr = size(samples[1].MatChrs, 1)
     numQTL = [size(samples[1].MatChrs[c].QTL, 1) for c = 1:numChr]
@@ -171,7 +170,7 @@ function getQTLGenotypes(samples = ind)
 end
 
 
-"function to replicate values over array (credit:Milan Bouchet-Valat (https://github.com/JuliaLang/julia/issues/16443))"
+## function to replicate values over array (credit:Milan Bouchet-Valat (https://github.com/JuliaLang/julia/issues/16443))
 function rep(x, lengths)
     if length(x) != length(lengths)
         throw(DimensionMismatch("vector lengths must match"))
@@ -188,7 +187,7 @@ function rep(x, lengths)
     res
 end
 
-"function to sample read depth"
+## function to sample read depth
 function sampleReadDepth(numLoci::Int64, numInd::Int64, meanDepth::Float64)
 # function sampleReadDepth(numLoci::Int64, numInd::Int64, meanDepth::Float64, sigmasqReadDepth::Float64, sigmasqSampleDepth::Float64, meanCallRate::Float64, sigmasqReadCallRate::Float64, sigmasqSampleCallRate::Float64)
     readDepth = rand(Gamma(meanDepth/11,11), numLoci)
@@ -236,7 +235,7 @@ function sampleReadDepth(numLoci::Int64, numInd::Int64, meanDepth::Float64)
 end
 
 
-"function to generate key file for simulated GBS data"
+## function to generate key file for simulated GBS data
 function getKeyFile(barcodeFile, numInd, flowcell, lane, numRow = 24, numCol = 16)
     barcode = readdlm(barcodeFile, '\t', header = false)
     useBarcode = barcode[1:numInd]
@@ -247,8 +246,9 @@ function getKeyFile(barcodeFile, numInd, flowcell, lane, numRow = 24, numCol = 1
     useBarcode
 end
 
+
 """
-GBS(totalQTL, totalSNP, muDensity, sigmasqDensity, winSize, muAlleleFreq,sigmasqAlleleFreq, re, depth, barcodeFile, plotOutput, writeOutput)
+	GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNPdensity::Float64, winSize::Int64, muAlleleFreq::Float64,sigmasqAlleleFreq::Float64, re, meanDepth::Float64, barcodeFile::String, plotOutput::Bool, writeOutput::Bool,outputOnlyGBS::Bool)
 
 Simulate Genotyping-by-Sequencing (GBS) data.
 
@@ -272,11 +272,10 @@ This function aims to generate GBS reads by inserting genomic variants into in s
 
 # Examples
 ```julia
-julia> GBS(1000, 0, 0.01, 0.0001, 1000000, 0.175,0.0065, [ApeKI], 5, "GBS_Barcodes.txt", true, true)
+julia> GBS(1000, 0, 0.01, 0.0001, 1000000, 0.175,0.0065, [ApeKI], 5, "GBS_Barcodes.txt", true, true,true)
 ```
 """
 function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNPdensity::Float64, winSize::Int64, muAlleleFreq::Float64,sigmasqAlleleFreq::Float64, re, meanDepth::Float64, barcodeFile::String, plotOutput::Bool, writeOutput::Bool,outputOnlyGBS::Bool)
-# function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNPdensity::Float64, winSize::Int64, muAlleleFreq::Float64,sigmasqAlleleFreq::Float64, re, meanDepth::Float64, sigmasqReadDepth::Float64, sigmasqSampleDepth::Float64, meanCallRate::Float64, sigmasqReadCallRate::Float64, sigmasqSampleCallRate::Float64, barcodeFile::String, plotOutput::Bool, writeOutput::Bool,outputOnlyGBS::Bool)
      ## 1. sample variants
      ### 1.1 QTL positions, number and allele frequencies
      qtlPos = sampleQTLPosition(totalQTL)

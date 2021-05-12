@@ -1,4 +1,32 @@
-"restriction enzyme used for digesting genome [name, cut-sequence, cut-site, overhang]"
+"""
+digestGenome(genofile, re, useChr, useChrLen, lower ,upper, plotOutput, writeOutput);
+
+Perform in slico digestion using restriction enzyme and generate GBS fragments.
+
+This function uses specified restriction enzyme(s) to digest genome and therefore generate GBS fragments. Fragment size-selection step is also included.
+
+# Arguments
+* `genofile`: Reference genome of targeted species
+* `re`: Restriction enzyme to be used in simulation
+* `useChr`: Either the number of chromosome(s) or a set of chromosome(s) to be simulated
+* `useChrLen`: The length of chromsome(s) in cM to be simulated, otherwise using entire chromosome
+* `lower`: Lower threshold of fragment size-selection
+* `upper`: Upper threshold of fragment size-selection
+* `winSize`: Size of window and bin for sampling SNP positions
+* `winSize`: Size of window and bin for sampling SNP positions
+* `plotOutput`: Logical, TRUE if graphical outputs are required
+* `writeOutput`: Logical, TRUE if text outputs are required
+
+# Notes
+* Future version to include 1. cut-site variation; 2. random sampling of GBS fragments
+
+# Examples
+```julia
+julia> digestGenome("fake.fa.gz", [ApeKI], [1], Array{Float64}(undef,0), 65 ,195, true, true)
+```
+"""
+## This file contains functions and types used for in slico digestioon
+## define restriction enzyme [name, cut-sequence, cut-site, overhang]
 mutable struct restrictionEnzyme
     name::String # name of the restriction enzyme
     cutSeq::Array{String} # recognition sequence
@@ -14,18 +42,14 @@ MspI = restrictionEnzyme("MspI", ["CCGG"], [2], ["CGG"]); # Poland et al. 2012
 PstI_MspI = restrictionEnzyme("PstI-MspI", ["CTGCAG","CCGG"], [2,2], ["TGCA", "CGG"]); # Poland et al. 2012
 
 
-## nucleotides and its complements
-"nucleotides"
+## nucleotides and its reverse complements
 nucl = Dict('A' => 'A', 'C' => 'C','G' => 'G','T' => 'T','N' => 'N','R' => rand(['A', 'G']), 'Y' => rand(['C', 'T']), 'S' => rand(['G', 'C']), 'W' => rand(['A', 'T']),
     'K' => rand(['G', 'T']), 'M' => rand(['A', 'C']), 'B' => rand(['C', 'G', 'T']), 'D' => rand(['A', 'G', 'T']),
     'H' => rand(['A', 'C', 'T']), 'V' => rand(['A', 'C', 'G'])); # randomly assign IUPAC codes for uncertain ones in the assembly
-
-"complements"
 comp = Dict('A' => 'T', 'C' => 'G','G' => 'C','T' => 'A','N' => 'N'); # complements of DNA nucleotides
 
 
-
-"split sequence by any specific sequence"
+## function to split sequence
 function splitSequence(seq, cutSeq, startSeq, endSeq)
     cuts = split(uppercase(seq), cutSeq) # split DNA sequence
     if length(cuts) > 1
@@ -37,7 +61,7 @@ function splitSequence(seq, cutSeq, startSeq, endSeq)
     cuts
 end
 
-"digest sequence using specified restriction enzyme"
+## function to digest sequence using specified restriction enzyme
 function digest(sequence, re::restrictionEnzyme)
     cutSeq = re.cutSeq
     cutPlace = re.cutPlace
@@ -59,7 +83,7 @@ function digest(sequence, re::restrictionEnzyme)
     sequence
 end
 
-"double-digestion (or enzyme has more than one recongnition site)"
+## function to implement double-digestion (or enzyme has more than one recongnition site)
 function digestSecond(sequence, re::restrictionEnzyme)
     cutSeq = re.cutSeq
     cutPlace = re.cutPlace
@@ -89,31 +113,7 @@ function digestSecond(sequence, re::restrictionEnzyme)
     goodSeq
 end
 
-"""
-	digestGenome(genofile, re, useChr, useChrLen, lower ,upper, plotOutput, writeOutput)
-
-Perform virtual digestion using restriction enzyme and generate GBS fragments.
-
-This function uses specified restriction enzyme(s) to digest genome and therefore generate GBS fragments. Fragment size-selection step is also included.
-
-# Arguments
-- `genofile`: Reference genome of targeted species
-- `re`: Restriction enzyme to be used in simulation
-- `useChr`: Either the number of chromosome(s) or a set of chromosome(s) to be simulated
-- `useChrLen`: The length of chromsome(s) in cM to be simulated, otherwise using entire chromosome
-- `lower`: Lower threshold of fragment size-selection
-- `upper`: Upper threshold of fragment size-selection
-- `winSize`: Size of window and bin for sampling SNP positions
-- `winSize`: Size of window and bin for sampling SNP positions
-- `plotOutput`: Logical, TRUE if graphical outputs are required
-- `writeOutput`: Logical, TRUE if text outputs are required
-...
-
-# Examples
-```julia
-julia> digestGenome("fake.fa.gz", [ApeKI], [1], Array{Float64}(undef,0), 65 ,195, true, true)
-```
-"""
+## function to implement virtual digestion
 function digestGenome(genofile::String, re::Array{restrictionEnzyme,1}, useChr::Array{Int64}, useChrLen::Array{Float64}, lowerThresh::Int64, upperThresh::Int64, plotOutput::Bool , writeOutput::Bool)
     ## module 1: read genome and cut it into fragments
     genome = readdlm(GZip.open(genofile), '\t') # load genome
