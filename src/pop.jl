@@ -1,4 +1,4 @@
-## define chromosome [recombination site, ancestor, SNP position, QTL position]
+"chromosome [recombination site, ancestor, SNP position, QTL position]"
 mutable struct chromosome
     Position::Array{Float64}
     Origin::Array{Int64}
@@ -7,7 +7,7 @@ mutable struct chromosome
     chromosome(Position, Origin) = new(Position, Origin, [], [])
 end
 
-## define individual [ID, marternal chromosome, paternal chromosome]
+"individual [ID, marternal chromosome, paternal chromosome]"
 mutable struct individual
     ID::Int64
     MatChrs::Array{chromosome}
@@ -15,7 +15,7 @@ mutable struct individual
     individual(ID, MatChrs, PatChrs) = new(ID, MatChrs, PatChrs)
 end
 
-## function to generate the founding population
+"function to generate the founding population"
 function generateFounders(numFounders::Int64)
     nChr = 2 * numFounders # each founder has two chromosomes
     f = Array{individual}(undef, numFounders)
@@ -26,7 +26,7 @@ function generateFounders(numFounders::Int64)
     f
 end
 
-## function to sample chromosomes of each offSpring
+"function to sample chromosomes of each offSpring"
 function sampleChromosome(ind)
     newChrs = Array{chromosome}(undef, numChr)
     for c = 1:numChr
@@ -61,7 +61,7 @@ function sampleChromosome(ind)
     newChrs
 end
 
-## function to generate offSpring
+"function to generate offSpring"
 function sampleOffspring(sire, dam, id = indCount[1])
     sireChrs = sampleChromosome(sire)
     damChrs = sampleChromosome(dam)
@@ -70,7 +70,7 @@ function sampleOffspring(sire, dam, id = indCount[1])
     off
 end
 
-## function to generate a new population at a SPECIFIED size (= $endSize) through a certain number (= $numGen) of geneartions
+"function to generate a new population at a SPECIFIED size (= $endSize) through a certain number (= $numGen) of geneartions"
 function changingPopSize(founders, endSize::Int64, numGen::Int64)
     startSize = size(founders, 1)
     popSize = Int.(round.(range(startSize, stop = endSize, length = numGen + 1)))[2:end]
@@ -85,7 +85,7 @@ function changingPopSize(founders, endSize::Int64, numGen::Int64)
     parents
 end
 
-## function to generate popluation at a FIXED size (= $numGenFinal) for a certain number (=$numGen) of geneartions
+"function to generate popluation at a FIXED size (= $numGenFinal) for a certain number (=$numGen) of geneartions"
 function constantPopSize(founders, numGen::Int64, numGenFinal::Int64, numSampleFinal::Int64, useWeights::Array{Float64})
     parents = copy(founders)
     final = Array{individual}(undef, numSampleFinal)
@@ -112,7 +112,7 @@ function constantPopSize(founders, numGen::Int64, numGenFinal::Int64, numSampleF
     final
 end
 
-## function to geneate a breeding population follows a user-defined pedigree
+"function to geneate a breeding population follows a user-defined pedigree"
 function samplePedigree(pedFile::String, pedFounders, output::Bool)
     println("INFO: Simulating from the given pedigree file: $pedFile.")
     ped = readdlm(pedFile, '\t', Int64, header = false)
