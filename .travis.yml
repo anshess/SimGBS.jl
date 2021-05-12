@@ -6,8 +6,7 @@ julia:
 os:
   - linux
   - osx
-  - windows
-
+  
 notifications:
   email:
     - Jie.Kang@agresearch.co.nz
