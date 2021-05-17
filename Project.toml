@@ -1,7 +1,7 @@
 name = "SimGBS"
 uuid = "92ef5d18-3a1f-4c68-9409-006e7edfe355"
 authors = ["Jie Kang <jie.kang@agresearch.co.nz> and contributors"]
-version = "0.1.4"
+version = "0.1.5"
 
 [deps]
 Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
@@ -13,8 +13,8 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
-Compat = "3.20, 3"
-Distributions = "0.23, 0.24, 0.25"
+Compat = "~ 3.20"
+Distributions = "0.23 - 0.25"
 GZip = "0.5"
 Plots = "1"
 StatsBase = "0.33"
