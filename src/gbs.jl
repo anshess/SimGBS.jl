@@ -204,7 +204,7 @@ function sampleReadDepth(numLoci::Int64, numInd::Int64, meanDepth::Float64)
     @. model(x, p) = p[1] / (1 + exp(-(x - p[2]) * p[3]))
     p0 = [1, 0.5, 5]
     fit_cr = curve_fit(model, dp, cr, p0)
-    xm = rand(Exponential(0.5), numLoci) # rand(Uniform(-1,1), numLoci)
+    xm = rand(Exponential(10), numLoci) # rand(Uniform(-1,1), numLoci)
     for i = 1:numLoci
         par1 = fit_cr.param[1]
         par2 = fit_cr.param[2]
