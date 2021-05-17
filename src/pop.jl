@@ -70,7 +70,7 @@ function sampleOffspring(sire, dam, id = indCount[1])
     off
 end
 
-"function to generate a new population at a SPECIFIED size (= $endSize) through a certain number (= $numGen) of geneartions"
+"function to generate a new population at a SPECIFIED size (= endSize) through a certain number (= numGen) of geneartions"
 function changingPopSize(founders, endSize::Int64, numGen::Int64)
     startSize = size(founders, 1)
     popSize = Int.(round.(range(startSize, stop = endSize, length = numGen + 1)))[2:end]
@@ -85,7 +85,7 @@ function changingPopSize(founders, endSize::Int64, numGen::Int64)
     parents
 end
 
-"function to generate popluation at a FIXED size (= $numGenFinal) for a certain number (=$numGen) of geneartions"
+"function to generate popluation at a FIXED size (= numGenFinal) for a certain number (=numGen) of geneartions"
 function constantPopSize(founders, numGen::Int64, numGenFinal::Int64, numSampleFinal::Int64, useWeights::Array{Float64})
     parents = copy(founders)
     final = Array{individual}(undef, numSampleFinal)
