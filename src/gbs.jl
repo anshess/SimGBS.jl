@@ -22,9 +22,9 @@ function sampleSNPPosition(totalSNP::Int64, winSize::Int64, mu::Float64, sigmasq
         snpPos = Array{Int64}(undef,0)
         for c = 1:numChr
             numWin = Int(round(chrLen[c] * 1e6 / winSize)) # number of windows to be split in chromosome c (fixed window size, variable window number)
-            theta = sigmasq/mu # calcualte Gamma paramter: scale
-            alpha = mu^2/sigmasq # calcualte Gamma paramter: shape
-            density = rand(Gamma(alpha, theta), numWin) # sample SNP density for each window
+            # theta = sigmasq/mu # calcualte Gamma paramter: scale
+            # alpha = mu^2/sigmasq # calcualte Gamma paramter: shape
+            density = exp.(rand(Normal(mu, sqrt(sigmasq)), numWin)) # sample SNP density for each window
             win = fill(winSize, numWin) # generate a vector (with length = numWin) contating windown size for each window
             winPos = [0; cumsum(win)[1:end-1]] # starting postion of each window
             sam = [rand(Bernoulli(density[i]), winSize) for i = 1:numWin] # sampling the occurence of SNP at each bp using local SNP density (sampled from Gamma model for each win)
@@ -33,7 +33,7 @@ function sampleSNPPosition(totalSNP::Int64, winSize::Int64, mu::Float64, sigmasq
             numSampled = length(sam3) # number of sampled SNP postions
             numSNP = [numSNP;numSampled] # record the number of sampled SNP postions for each chromosome
             snpPos = [snpPos;[sort(Int64.(sam3[randperm(numSampled)[1:numSampled]]))]] # sort SNP positions
-            println("CHROMOSOME $c: $numSampled SNPs sampled with average SNP density = $(round(mean(Gamma(alpha,theta)),digits=3)) (window size = $winSize bp).")
+            println("CHROMOSOME $c: $numSampled SNPs sampled with average SNP density = $(round(mean(density),digits=3)) (window size = $winSize bp).")
         end
     end
     snpPos
@@ -171,7 +171,7 @@ function getQTLGenotypes(samples = ind)
 end
 
 
-"function to replicate values over array (credit:Milan Bouchet-Valat (https://github.com/JuliaLang/julia/issues/16443))"
+"function to replicate values over array - Milan Bouchet-Valat (https://github.com/JuliaLang/julia/issues/16443)"
 function rep(x, lengths)
     if length(x) != length(lengths)
         throw(DimensionMismatch("vector lengths must match"))
@@ -204,7 +204,7 @@ function sampleReadDepth(numLoci::Int64, numInd::Int64, meanDepth::Float64)
     @. model(x, p) = p[1] / (1 + exp(-(x - p[2]) * p[3]))
     p0 = [1, 0.5, 5]
     fit_cr = curve_fit(model, dp, cr, p0)
-    xm = rand(Uniform(-1,1), numLoci)
+    xm = rand(Exponential(0.5), numLoci) # rand(Uniform(-1,1), numLoci)
     for i = 1:numLoci
         par1 = fit_cr.param[1]
         par2 = fit_cr.param[2]
