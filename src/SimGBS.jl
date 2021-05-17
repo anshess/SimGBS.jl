@@ -12,8 +12,8 @@ export digestGenome           # main function for in slico digestion using restr
 export definePopulation       # main function for defining population structure
 export GBS                    # main function for GBS simulation
 
-# include("/home/kangj/git/SimGBS.jl/src/genome.jl")          # step 1. in slico digestion using restriction enzyme
-# include("/home/kangj/git/SimGBS.jl/src/pop.jl")             # step 2. set up population structure
-# include("/home/kangj/git/SimGBS.jl/src/gbs.jl")             # step 3. simultae GBS data
+include("genome.jl")          # step 1. in slico digestion using restriction enzyme
+include("pop.jl")             # step 2. set up population structure
+include("gbs.jl")             # step 3. simultae GBS data
 
 end
