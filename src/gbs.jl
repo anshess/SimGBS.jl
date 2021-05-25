@@ -24,10 +24,10 @@ function sampleSNPPosition(totalSNP::Int64, winSize::Int64, mu::Float64, sigmasq
             numWin = Int(round(chrLen[c] * 1e6 / winSize)) # number of windows to be split in chromosome c (fixed window size, variable window number)
             # theta = sigmasq/mu # calcualte Gamma paramter: scale
             # alpha = mu^2/sigmasq # calcualte Gamma paramter: shape
-            density = exp.(rand(Normal(mu, sqrt(sigmasq)), numWin)) # sample SNP density for each window
+            density = exp.(rand(Laplace(mu, sigmasq), numWin)) # sample SNP density for each window
             win = fill(winSize, numWin) # generate a vector (with length = numWin) contating windown size for each window
             winPos = [0; cumsum(win)[1:end-1]] # starting postion of each window
-            sam = [rand(Bernoulli(density[i]), winSize) for i = 1:numWin] # sampling the occurence of SNP at each bp using local SNP density (sampled from Gamma model for each win)
+            sam = [rand(Bernoulli(1.5*density[i]), winSize) for i = 1:numWin] # sampling the occurence of SNP at each bp using local SNP density (sampled from Gamma model for each win)
             sam2 = map(x -> findall(x .> 0), sam) # record SNP positions within each window
             sam3 = reduce(vcat, [sam2[i] .+ winPos[i] for i = 1:numWin]) # calcualte SNP position within chromosome
             numSampled = length(sam3) # number of sampled SNP postions
@@ -77,7 +77,7 @@ function makeFounderQTL(founders, qtlAF::Array{Any,1})
 end
 
 "function to fill haplotypes at individual level"
-function fillHaplotypes(samples, founders, numChr::Int64, snpPos, qtlPos::Array{Array{Int64,1},1})
+function fillHaplotypes(samples, founders, numChr::Int64, useChr::Array{Int64}, snpPos, qtlPos::Array{Array{Int64,1},1})
     if size(founders[1].MatChrs[1].QTL, 1) == 0
         error("Haplotypes not made - need to run makeFounderSNPs(founders,snpAF)")
     else
@@ -204,7 +204,7 @@ function sampleReadDepth(numLoci::Int64, numInd::Int64, meanDepth::Float64)
     @. model(x, p) = p[1] / (1 + exp(-(x - p[2]) * p[3]))
     p0 = [1, 0.5, 5]
     fit_cr = curve_fit(model, dp, cr, p0)
-    xm = rand(Exponential(10), numLoci) # rand(Uniform(-1,1), numLoci)
+    xm = rand(Exponential(0.5), numLoci) # rand(Uniform(-1,1), numLoci)
     for i = 1:numLoci
         par1 = fit_cr.param[1]
         par2 = fit_cr.param[2]
@@ -248,34 +248,34 @@ function getKeyFile(barcodeFile, numInd, flowcell, lane, numRow = 24, numCol = 1
 end
 
 """
-GBS(totalQTL, totalSNP, muDensity, sigmasqDensity, winSize, muAlleleFreq,sigmasqAlleleFreq, re, depth, barcodeFile, plotOutput, writeOutput)
+	GBS(totalQTL, totalSNP, muDensity, sigmasqDensity, winSize, muAlleleFreq, sigmasqAlleleFreq, re, meanDepth, barcodeFile, useChr, plotOutput, writeOutput, onlyOutputGBS)
 
 Simulate Genotyping-by-Sequencing (GBS) data.
 
-This function aims to generate GBS reads by inserting genomic variants into in slico digested genomic fragments, ligate the polymorphic sequence with barcodes and replicate based on sequencing depth.
+This function generates GBS reads by inserting genomic variants into in slico digested genomic fragments, ligate the polymorphic sequence with barcodes and replicate based on sequencing depth.
 
 # Arguments
-* `totalQTL`: The number of QTL to be simulated
-* `totalSNP`: The number of SNPs to be simulated (set to "0" if sampling SNP positions based on density)
-* `muDensity`: Average SNP density
-* `sigmasqDensity`: Variance of SNP density
+* `totalQTL`: total number of QTL to be simulated
+* `totalSNP`: total number of SNPs to be simulated (set to "0" if sampling SNP positions based on density)
+* `muDensity`: location parameter of log-Laplace distribution (for sampling SNP density)
+* `sigmasqDensity`: scale parameter of log-Laplace distribution (for sampling SNP density)
 * `winSize`: Size of window and bin for sampling SNP positions
-* `muAlleleFreq`: Average allele frequency
-* `sigmasqAlleleFreq`: Variance of allele frequency
-* `re`: Restriction Enzyme to be used
-* `barcodeFile`: File contains GBS barcodes
-* `plotOutput`: Logical, TRUE if graphical outputs are required
-* `writeOutput`: Logical, TRUE if text outputs are required
+* `muAlleleFreq`: mean of sampled allele frequency
+* `sigmasqAlleleFreq`: variance of sampled allele frequency
+* `re`: restriction enzyme(s) to be used
+* `barcodeFile`: file containing GBS barcodes
+* `useChr`: either the number of chromosome or a set of chromosome(s) to be simulated
+* `plotOutput`: set to true if graphical outputs are required
+* `writeOutput`: set to true if text outputs are required
+* `onlyOutputGBS`: set to true if only GBS data is kept
 
-# Notes
-* Future version to include 1. cut-site variation; 2. random sampling of GBS fragments
 
 # Examples
 ```julia
-julia> GBS(1000, 0, 0.01, 0.0001, 1000000, 0.175,0.0065, [ApeKI], 5, "GBS_Barcodes.txt", true, true)
+julia> GBS(100, 0, -2.0, 0.001, 1000000, 0.5, 0.001, [SimGBS.ApeKI], 20.0, "GBS_Barcodes.txt", [1], false, true, true)
 ```
 """
-function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNPdensity::Float64, winSize::Int64, muAlleleFreq::Float64,sigmasqAlleleFreq::Float64, re, meanDepth::Float64, barcodeFile::String, plotOutput::Bool, writeOutput::Bool,outputOnlyGBS::Bool)
+function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNPdensity::Float64, winSize::Int64, muAlleleFreq::Float64,sigmasqAlleleFreq::Float64, re, meanDepth::Float64, barcodeFile::String,useChr::Array{Int64}, plotOutput::Bool, writeOutput::Bool,onlyOutputGBS::Bool)
 # function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNPdensity::Float64, winSize::Int64, muAlleleFreq::Float64,sigmasqAlleleFreq::Float64, re, meanDepth::Float64, sigmasqReadDepth::Float64, sigmasqSampleDepth::Float64, meanCallRate::Float64, sigmasqReadCallRate::Float64, sigmasqSampleCallRate::Float64, barcodeFile::String, plotOutput::Bool, writeOutput::Bool,outputOnlyGBS::Bool)
      ## 1. sample variants
      ### 1.1 QTL positions, number and allele frequencies
@@ -283,7 +283,7 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
      numQTL = length.(qtlPos)
      qtlAF = sampleAlleleFrequency(numQTL, muAlleleFreq, sigmasqAlleleFreq)
      ###  1.2 SNP positions
-     snpPos = sampleSNPPosition(totalSNP,winSize,muDensity,sigmasqDensity)
+     snpPos = sampleSNPPosition(totalSNP,winSize,muSNPdensity,sigmasqSNPdensity)
      numSNP = length.(snpPos)
      numFrag = [length(findall(x -> x == useChr[c], GBSFrag.chr)) for c in 1:numChr] # number of GBS fragments found within each chromosome
      ### 1.3 SNP captured by GBS fragments
@@ -308,12 +308,14 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
          # [snpGBS; [(reduce(vcat,snpSelected[fragSelected]) .+ [0;length.(snpPos)][c])]] # store index of SNPs found on GBS fragments
          hapSize = [hapSize; hapSizeChr] # store shortHap size (number of SNPs with each shortHap)
          fragSNP = [fragSNP; fragSelected .+ [0;numFrag][c]] # store only fragments contain SNPs
-         println("CHROMOSOME $(useChr[c]): Found $numSNPChr SNPs on $numHapLoci GBS fragments, with an average of $(round(mean(hapSizeChr);digits=2)) SNPs per GBS fragment.")
+         println("CHROMOSOME $(useChr[c]): Found $numSNPChr SNPs on $numHapLoci GBS fragments, with an average of $(round(mean(hapSizeChr),digits=2)) SNPs per GBS fragment.")
      end
      #### 1.3.4 (Optional) keep only SNPs captured by GBS fragments for the subsequent steps
      if onlyOutputGBS == true
+         println("[INFO]: a total of $(sum(numSNP)) SNPs were sampled.")
          numSNP = length.(snpGBS) # update number of SNPs
-         snpPos = [snpPos[c][snpGBS[c]] for c in 1:numChr]   # snpPosGBS = [snpPos[c][snpGBS[c] .- [0;length.(snpPos)][c]] for c in 1:numChr] # positions of SNPs captured by GBS fragments
+         println("[INFO]: $(sum(numSNP)) SNPs captured by selected GBS SNPs.")
+         snpPos = [snpPos[c][snpGBS[c]] for c in 1:numChr]
      end
      ### 1.4 SNP allele frequencies
      snpAF = sampleAlleleFrequency(numSNP, muAlleleFreq, sigmasqAlleleFreq)
@@ -321,22 +323,14 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
      makeFounderQTL(founders, qtlAF)
      makeFounderSNPs(founders, snpAF)
      ### 1.6 fill haplotypes
-     @time fillHaplotypes(ind, founders, numChr, snpPos, qtlPos)
+     @time fillHaplotypes(ind, founders, numChr, useChr, snpPos, qtlPos)
      ### 1.7 extract haplotypes
      haps = getHaplotypes(ind)
      ## 2. generate GBS reads
      ### 2.1 sample read depth
      totalInd = size(ind,1) # number of samples to be simulated
      totalFrag = length(fragSNP) # number of loci
-     readDepth = sampleReadDepth(totalFrag, totalInd, meanDepth) # depth
-     matHapDepth = [rand(Binomial(readDepth[i,j])) for i = 1:totalInd, j = 1:totalFrag] # depth of marternal haplotypes# [rand(Hypergeometric(success[i],failure[i],readDepth[useInd[i],f]),1)[1] for i in 1: numInd]
-     patHapDepth = readDepth - matHapDepth # depth of parternal haplotypes
-     matDepthFwd = [rand(Binomial(matHapDepth[i,j])) for i in 1:totalInd, j in 1:totalFrag]
-     matDepthRevComp = matHapDepth - matDepthFwd
-     patDepthFwd = [rand(Binomial(patHapDepth[i,j])) for i in 1:totalInd,j in 1:totalFrag]
-     patDepthRevComp = patHapDepth - patDepthFwd
-     # readDepth = sampleReadDepth(totalFrag, totalInd, meanDepth, sigmasqReadDepth, sigmasqSampleDepth, meanCallRate, sigmasqReadCallRate, sigmasqSampleCallRate)
-     println("INFO: Average GBS read depth equals to $(mean(readDepth)).")
+     totalDepth = Array{Int64}(undef,totalInd,totalFrag)
      ### 2.2 inster variants
      #### 2.2.1 subset haplotype alleel by chromosome
      hapStart = [1; numSNP[1:end-1] .+ 1] .+ 1
@@ -351,11 +345,20 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
          else
              numInd = multiplex # number of samples to be 'sequenced'
          end
-         println("INFO: On Lane $lane of Flowcell $flowcell: Generating GBS data for $numInd samples.")
-         io = GZip.open("$(flowcell)_$(lane)_fastq.txt.gz", "w") # output file
+         readDepth = sampleReadDepth(totalFrag, numInd, meanDepth) # depth
          useInd = [i + (lane - 1) * multiplex for i in 1:numInd] # which individual gets sequenced (ascending order)
-         numReadsTotal = 0 # reads counter
+         totalDepth[useInd,:] = readDepth
+         println("[INFO] On Lane $lane of Flowcell $flowcell: Average GBS read depth equals to $(round(mean(readDepth),digits=2)).")
+         matHapDepth = [rand(Binomial(readDepth[i,j])) for i in 1:numInd, j in 1:totalFrag]
+         patHapDepth = readDepth - matHapDepth # depth of parternal haplotypes
+         matDepthFwd = [rand(Binomial(matHapDepth[i,j])) for i in 1:numInd, j in 1:totalFrag]
+         matDepthRevComp = matHapDepth - matDepthFwd
+         patDepthFwd = [rand(Binomial(patHapDepth[i,j])) for i in 1:numInd,j in 1:totalFrag]
+         patDepthRevComp = patHapDepth - patDepthFwd
+         println("[INFO] On Lane $lane of Flowcell $flowcell: Generating GBS data for $numInd samples.")
          barcodes = getKeyFile(barcodeFile, numInd, flowcell, lane) # extract barcodes
+         io = GZip.open("$(flowcell)_$(lane)_fastq.txt.gz", "w") # output file
+         numReadsTotal = 0 # reads counter
          for c = 1:numChr
              ##### 2.2.2.1 extract GBS fragments and SNPs
              chr = findall(x -> x == useChr[c], GBSFrag.chr) # index fragments from chromosome c
@@ -388,22 +391,17 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
                  else
                      stops = 101 # if the length of fragment is longer than 101, stop at 101
                  end
-                 # matAlleleChrTemp = [bases[j, matHap[i,j]] for i in useInd, j = 1:length(sites)]
-                 # patAlleleChrTemp = [bases[j, patHap[i,j]] for i in useInd, j = 1:length(sites)]
-                 # alleleChrTemp = [matAlleleChrTemp[i,j] * "/" * patAlleleChrTemp[i,j] for i in useInd, j = 1:length(sites)]
                  matHapChrTemp = [join([[seg[j] * bases[j, matHap[i,j]] for j = 1:length(sites)]; seg[length(sites)+1]; re[1].overhang[1]]) for i in useInd]
                  patHapChrTemp =  [join([[seg[j] * bases[j, patHap[i,j]] for j = 1:length(sites)]; seg[length(sites)+1]; re[1].overhang[1]]) for i in useInd]
                  matHapChr = [matHapChrTemp[i][1:stops] for i in 1: numInd]
                  patHapChr = [patHapChrTemp[i][1:stops] for i in 1: numInd]
                  matHapRevCompChr = [reverse(map(x -> comp[nucl[x]], matHapChrTemp[i]))[1:stops] for i in 1: numInd] # reverse complement GBS reads of maternal haplotypes
                  patHapRevCompChr = [reverse(map(x -> comp[nucl[x]], patHapChrTemp[i]))[1:stops] for i in 1: numInd] # reverse complement GBS reads of paternal haplotypes
-                 readGBS = collect(Iterators.flatten([[rep([barcodes[i] .* matHapChrTemp[i]], matDepthFwd[useInd[i],f]); rep([barcodes[i] .* matHapRevCompChr[i]], matDepthRevComp[useInd[i],f]); rep([barcodes[i] .* patHapChr[i]], patDepthFwd[useInd[i],f]); rep([barcodes[i] .* patHapRevCompChr[i]], patDepthRevComp[useInd[i],f])] for i in 1:numInd]))
-                 # readGBS = collect(Iterators.flatten([[rep([barcodes[i] .* matHapChrTemp[i]], matDepthFwd[useInd[i],f]); rep([barcodes[i] .* matHapRevCompChr[i]], matDepthRevComp[useInd[i],f]); rep([barcodes[i] .* patHapChr[i]], patDepthFwd[useInd[i],f]); rep([barcodes[i] .* patHapRevCompChr[i]], patDepthRevComp[useInd[i],f])] for i in 1:numInd]))
+                 readGBS = collect(Iterators.flatten([[rep([barcodes[i] .* matHapChrTemp[i]], matDepthFwd[i,f]); rep([barcodes[i] .* matHapRevCompChr[i]], matDepthRevComp[i,f]); rep([barcodes[i] .* patHapChr[i]], patDepthFwd[i,f]); rep([barcodes[i] .* patHapRevCompChr[i]], patDepthRevComp[i,f])] for i in 1:numInd]))
                  totalReads = shuffle(readGBS)
                  numReads = length(totalReads)
                  numReadsTotal = numReadsTotal + numReads
                  writedlm(io,["@SIM001:001:ABC12AAXX:$lane:0000:0000:$r 1:N:0:0\n" * totalReads[r] * "\n+\n" * repeat("I", length(totalReads[r])) for r in 1:length(totalReads)], quotes = false)
-                 # allele = [allele alleleChrTemp]
              end
          end
          println("INFO: A total of $numReadsTotal GBS reads genertaed.")
@@ -422,7 +420,7 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
      hapIndex = [0;rep(fragSNP,hapSize)] # indexing shortHaps
      hapGBS = vcat(hapIndex',haps)
      ### 3.5 SNP depth, call rates
-     snpDepth = transpose(reshape(vcat([rep(readDepth[i, :], collect(Iterators.flatten(hapSize))) for i = 1:totalInd]...), sum(hapSize), totalInd))
+     snpDepth = transpose(reshape(vcat([rep(totalDepth[i, :], collect(Iterators.flatten(hapSize))) for i = 1:totalInd]...), sum(hapSize), totalInd))
      if writeOutput == true
          writedlm("snpGeno.txt", snpGeno)
          writedlm("qtlGeno.txt",qtlGeno)
@@ -430,7 +428,7 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
          writedlm("qtlInfo.txt",qtlData)
          writedlm("snpFragGBS.txt",snpFragGBS)
          writedlm("shortHap.txt", hapGBS)
-         writedlm("readDepth.txt", readDepth)
+         writedlm("readDepth.txt", totalDepth)
          writedlm("snpDepth.txt", snpDepth)
          # writedlm("allele.txt",allele[:,2:end])
      end
