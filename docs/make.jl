@@ -3,7 +3,7 @@ push!(LOAD_PATH,"../src/")
 using Documenter, SimGBS
 
 makedocs(
-    sitename = "SimGBS.jl"
+    repo = "github.com/kanji709/SimGBS.jl.git",
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.
