@@ -1,7 +1,7 @@
 ## SimGBS: A Julia Package to Simulate Genotyping-by-Sequencing (GBS) Data  
 
 [![Doc](https://img.shields.io/badge/docs-stable-blue.svg)](https://github.com/kanji709/SimGBS.jl/docs/build/index.html)
-[![Build Status](https://travis-ci.com/kanji709/SimGBS.jl.svg?branch=master)](https://travis-ci.com/kanji709/SimGBS.jl)
+[![Build Status](https://github.com/julia-actions/SimGBS.jl/workflows/CI/badge.svg)](https://github.com/kanji709/SimGBS.jl/workflows/actions)
 ![GitHub repo size](https://img.shields.io/github/repo-size/kanji709/SimGBS.jl?style=flat-square)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/kanji709/SimGBS.jl?color=purple&style=flat-square)
 [![GitHub issues](https://img.shields.io/github/issues/AgResearch/snpGBS)](https://github.com/kanji709/SimGBS.jl/issues)
