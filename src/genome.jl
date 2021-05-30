@@ -97,24 +97,23 @@ Perform virtual digestion using restriction enzyme and generate GBS fragments.
 This function uses specified restriction enzyme(s) to digest genome and therefore generate GBS fragments. Fragment size-selection step is also included.
 
 # Arguments
-- `genofile`: Reference genome of targeted species
-- `re`: Restriction enzyme to be used in simulation
-- `useChr`: Either the number of chromosome(s) or a set of chromosome(s) to be simulated
-- `useChrLen`: The length of chromsome(s) in cM to be simulated, otherwise using entire chromosome
-- `lower`: Lower threshold of fragment size-selection
-- `upper`: Upper threshold of fragment size-selection
-- `winSize`: Size of window and bin for sampling SNP positions
-- `winSize`: Size of window and bin for sampling SNP positions
-- `plotOutput`: Logical, TRUE if graphical outputs are required
-- `writeOutput`: Logical, TRUE if text outputs are required
+- `genofile`: file containing the reference genome 
+- `re`: restriction enzyme(s) to be used
+- `useChr`: either the number of chromosome or a set of chromosome(s) to be simulated
+- `useChrLen`: length of chromsome in cM to be used in simulation, otherwise using entire chromosome
+- `lower`: lower threshold of fragment size-selection
+- `upper`: upper threshold of fragment size-selection
+- `winSize`: size of windows used for calculating average genomic coverage 
+- `plotOutput`: set to true if graphical outputs are required
+- `writeOutput`: set to true if text outputs are required
 ...
 
 # Examples
 ```julia
-julia> digestGenome("fake.fa.gz", [ApeKI], [1], Array{Float64}(undef,0), 65 ,195, true, true)
+julia> digestGenome("ref.fa.gz", [SimGBS.ApeKI], [1], Array{Float64}(undef,0), 65 ,195, 1000000, false, true)
 ```
 """
-function digestGenome(genofile::String, re::Array{restrictionEnzyme,1}, useChr::Array{Int64}, useChrLen::Array{Float64}, lowerThresh::Int64, upperThresh::Int64, plotOutput::Bool , writeOutput::Bool)
+function digestGenome(genofile::String, re::Array{restrictionEnzyme,1}, useChr::Array{Int64}, useChrLen::Array{Float64}, lowerThresh::Int64, upperThresh::Int64, winSize::Int64, plotOutput::Bool , writeOutput::Bool)
     ## module 1: read genome and cut it into fragments
     genome = readdlm(GZip.open(genofile), '\t') # load genome
     index = LinearIndices(genome) # index genome
