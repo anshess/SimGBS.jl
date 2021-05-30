@@ -1,14 +1,8 @@
-push!(LOAD_PATH,"../src/")
-
 using Documenter, SimGBS
 
-makedocs(
-    repo = "github.com/kanji709/SimGBS.jl.git",
+makedocs(modules=[SimGBS],
+         sitename="SimGBS.jl"
 )
-
-# Documenter can also automatically deploy documentation to gh-pages.
-# See "Hosting Documentation" and deploydocs() in the Documenter manual
-# for more information.
-#=deploydocs(
-    repo = "<repository url>"
-)=#
+deploydocs(
+     repo = "github.com/kanji709/SimGBS.jl.git"
+)
