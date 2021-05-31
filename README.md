@@ -10,7 +10,7 @@
 
 ## Introduction 
 
-SimGBS is a versatile method of simulating GBS data. It can be implemented with any genome of choice. Users can modify different parameters to customise GBS setting, such as the restriction enzyme and sequencing depth. By adopting the gene drop method, users can also specify the demographic history and population structure (by supplying a pedigree file). Like real sequencers, SimGBS will output data into FASTQ format at the end of each simulation.   
+SimGBS is a versatile method of simulating GBS data. It can be implemented with any genome of choice. Users can modify different parameters to customise GBS setting, such as the choice of restriction enzyme and sequencing depth. By taking the gene-drop approach, users can also specify the demographic history and define population structure (by supplying a pedigree file). Like real sequencers, SimGBS will output data into FASTQ format.   
 
 ## Installation
 
