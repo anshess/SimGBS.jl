@@ -211,8 +211,7 @@ function digestGenome(
         GBSFragPos = GBSFrag.pos[GBSFragChr]
         GBSFragLen = GBSFrag.len[GBSFragChr]
         GBSFragWin = [
-            findall(x -> x <= winEnds[w] && x >= winStarts[w], GBSFragPos) for
-            w = 1:numWin
+            findall(x -> x <= winEnds[w] && x >= winStarts[w], GBSFragPos) for w = 1:numWin
         ]
         GBSFragCoverWin = [sum(GBSFragLen[GBSFragWin[w]]) / 1e6 for w = 1:numWin]
         GBSFragCover = [GBSFragCover; GBSFragCoverWin]
