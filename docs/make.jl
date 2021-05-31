@@ -1,4 +1,11 @@
 using Documenter, SimGBS
 
-makedocs(modules = [SimGBS], sitename = "SimGBS.jl")
-deploydocs(repo = "github.com/kanji709/SimGBS.jl.git")
+makedocs(
+sitename = "SimGBS.jl",
+modules = [SimGBS],
+pages=["Home" => "index.md"]
+)
+
+deploydocs(
+    repo = "github.com/kanji709/SimGBS.jl.git",
+)

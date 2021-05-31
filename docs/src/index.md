@@ -108,37 +108,37 @@ definePopulation(numFounders::Int64, endSize::Int64, numGenCha::Int64, numGenCon
 GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNPdensity::Float64, winSize::Int64, muAlleleFreq::Float64,sigmasqAlleleFreq::Float64, re, meanDepth::Float64, barcodeFile::String,useChr::Array{Int64}, plotOutput::Bool, writeOutput::Bool,onlyOutputGBS::Bool)
 ```
 
-After importing SimGBS, users can execute all three functions sequentially to generate GBS data. Alternatively, users may run the Julia script directly 
+After importing SimGBS, users can execute all three functions sequentially to generate GBS data. Alternatively, users may run the Julia script directly
 
 ```{bash}
 $ julia example.jl
 ```
 
 
-Note that each function can also be executed independently to carry out specific task (e.g., run `digestGenome` for testing GBS coverage under different choice of restriction enzyme). 
+Note that each function can also be executed independently to carry out specific task (e.g., run `digestGenome` for testing GBS coverage under different choice of restriction enzyme).
 
 
 ## Expected Output
 
-A list of outputs will be outputted 
+A list of outputs will be outputted
 
-#### GBS Fragments 
+#### GBS Fragments
 - RawFrag.txt: raw GBS fragments following _in slico_ digestion
 - GBSFrag.txt: selected GBS fragments after fragment size-selection
-- GBSCoverage.txt: genomic coverage of GBS fragments 
+- GBSCoverage.txt: genomic coverage of GBS fragments
 - snpFragGBS.txt: GBS fragments that contains SNPs
 
-#### Variants 
-- qtlGeno.txt: QTL genotype (number of individual x number of QTL loci)
-- snpGeno.txt: SNP genotypes (number of individual x number of QTL loci)
-- qtlInfo.txt: information about QTL, including chromosome, position and allele frequency
-- snpInfo.txt: information about SNPs, including chromosome, position and allele frequency
-- shortHap.txt: short-haplotype created by GBS fragments (i.e., SNPs captured within each GBS fragment)
+#### Variants
+- `qtlGeno.txt`: QTL genotype (number of individual x number of QTL loci)
+- `snpGeno.txt`: SNP genotypes (number of individual x number of QTL loci)
+- `qtlInfo.txt`: information about QTL, including chromosome, position and allele frequency
+- `snpInfo.txt`: information about SNPs, including chromosome, position and allele frequency
+- `shortHap.txt`: short-haplotype created by GBS fragments (i.e., SNPs captured within each GBS fragment)
 - readDepth.txt: number of copies per GBS fragment  
 
 #### GBS Data
-- keyFile_ABC12AAXX_1.txt: pseudo-information about GBS sample, including flowcell, lane, barcode, sample name, plate, row and column  
-- ABC12AAXX_1_fastq.txt.gz: simulated GBS sequences
+- `keyFile\_ABC12AAXX\_1.txt`: pseudo-information about GBS sample, including flowcell, lane, barcode, sample name, plate, row and column  
+- `ABC12AAXX\_1\_fastq.txt.gz`: simulated GBS sequences
 
 
 
@@ -146,8 +146,7 @@ A list of outputs will be outputted
 
 Following tools are recommended for downstream Analyses of GBS data,
 
-- [**snpGBS**](https://github.com/AgResearch/snpGBS):
-a simple bioinformatics workflow to identify single nucleotide polymorphism (SNP) from Genotyping-by-Sequencing (GBS) data.
+- [**snpGBS**](https://github.com/AgResearch/snpGBS): a simple bioinformatics workflow to identify single nucleotide polymorphism (SNP) from Genotyping-by-Sequencing (GBS) data.
 
 - [**KGD**](https://github.com/AgResearch/KGD): R code for the analysis of genotyping-by-sequencing (GBS) data, primarily to construct a genomic relationship matrix for the genotyped individuals.   
 
