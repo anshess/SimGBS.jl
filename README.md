@@ -8,7 +8,9 @@
 [![GitHub license](https://img.shields.io/github/license/AgResearch/snpGBS?style=flat-square)](https://github.com/AgResearch/snpGBS/blob/main/LICENSE)
 
 
+## Introduction 
 
+SimGBS is a versatile method of simulating GBS data. It can be implemented with any genome of choice. Users can modify different parameters to customise GBS setting, such as the restriction enzyme and sequencing depth. By adopting the gene drop method, users can also specify the demographic history and population structure (by supplying a pedigree file). Like real sequencers, SimGBS will output data into FASTQ format at the end of each simulation.   
 
 ## Installation
 

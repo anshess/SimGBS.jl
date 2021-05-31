@@ -7,5 +7,5 @@ pages=["Home" => "index.md"]
 )
 
 deploydocs(
-    repo = "github.com/kanji709/SimGBS.jl",
+    repo = "github.com/kanji709/SimGBS.jl.git",
 )
