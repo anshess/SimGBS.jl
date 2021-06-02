@@ -120,7 +120,7 @@ Note that each function can also be executed independently to carry out specific
 
 ## Expected Output
 
-A list of outputs will be outputted
+Following outputs will be returned 
 
 #### GBS Fragments
 - RawFrag.txt: raw GBS fragments following _in slico_ digestion
