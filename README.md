@@ -32,7 +32,7 @@ pkg> add SimGBS
 
 - Reference genome of the target species in FASTA format (e.g., `xxx.fasta.gz`/`xxx.fa.gz`)   
 
-- Flie stores a list of Illumina barcodes (e.g., `GBS_Barcodes.txt`)
+- File stores a list of Illumina barcodes (e.g., `GBS_Barcodes.txt`)
 
 - (optional) Pedigree File (e.g.,`small.ped`)
 
