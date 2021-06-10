@@ -10,7 +10,7 @@
 
 ## Introduction 
 
-SimGBS is a versatile method of simulating GBS data. It can be implemented with any genome of choice. Users can modify different parameters to customise GBS setting, such as the choice of restriction enzyme and sequencing depth. By taking the gene-drop approach, users can also specify the demographic history and define population structure (by supplying a pedigree file). Like real sequencers, SimGBS will output data into FASTQ format.   
+SimGBS is a versatile method of simulating  [Genotyping-by-Sequencing (GBS)](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0019379) data. It can be implemented with any genome of choice. Users can modify different parameters to customise GBS setting, such as the choice of restriction enzyme and sequencing depth. By taking the [gene-drop](https://academic.oup.com/g3journal/article/5/7/1415/6025367) approach, users can also specify the demographic history and define population structure (by supplying a pedigree file). Like real sequencers, SimGBS will output data into [FASTQ](https://en.wikipedia.org/wiki/FASTQ_format) format.   
 
 ## Installation
 
@@ -32,7 +32,7 @@ pkg> add SimGBS
 
 - Reference genome of the target species in FASTA format (e.g., `xxx.fasta.gz`/`xxx.fa.gz`)   
 
-- File stores a list of Illumina barcodes (e.g., `GBS_Barcodes.txt`)
+- A list of Illumina barcodes (e.g., `GBS_Barcodes.txt`)
 
 - (optional) Pedigree File (e.g.,`small.ped`)
 
@@ -46,9 +46,9 @@ pkg> add SimGBS
 
 - Haplotypes, SNP and QTL genotypes (e.g.,`hap.txt`, `snpGeno.txt` and `qtlGeno.txt`)
 
-- File contains basic information about simulated GBS experiment (e.g.,`keyFile.txt`)
+- Basic information about simulated GBS experiment (e.g.,`keyFile.txt`)
 
-- File contains simulated GBS reads in FASTQ format (e.g.,`xxxxx.fastq`)
+- Simulated GBS reads in FASTQ format (e.g.,`xxxxx.fastq`)
 
 etc.
 
@@ -63,4 +63,4 @@ For more information, please visit the [documentation](https://kanji709.github.i
 
 Please cite the following if you use `SimGBS.jl`,
 
-- Hess, A. S., M. K. Hess, K. G. Dodds, J. C. Mcewan, S. M. Clarke, and S. J. Rowe. "A method to simulate low-depth genotyping-by-sequencing data for testing genomic analyses." Proc 11th World Congr Genet Appl to Livest Prod 385 (2018).
+- [Hess, A. S., M. K. Hess, K. G. Dodds, J. C. Mcewan, S. M. Clarke, and S. J. Rowe. "A method to simulate low-depth genotyping-by-sequencing data for testing genomic analyses." Proc 11th World Congr Genet Appl to Livest Prod 385 (2018)](https://www.researchgate.net/publication/325012536_A_method_to_simulate_low-depth_genotyping-by-sequencing_data_for_testing_genomic_analyses).
