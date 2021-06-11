@@ -5,7 +5,7 @@ using SimGBS
 genofile = "ref.fa.gz"
 re = [SimGBS.ApeKI]; # specify the restriction enzyme to be used for virtual digestion
 useChr = [1]; # specify either the number of chromosome(s) or a set of chromosome(s) to be used for simulating GBS data
-useChrLen = Array{Float64}(undef, 0); # specify the length of chromosome(s) in cM to be simulated, otherwise using the entire chromosome
+useChrLen = Array{Float64}(undef, 0); # specify the length of chromosome(s) in cM to be simulated, otherwise using the entire chromosome (Array{Float64}(undef, 0) means empty set)
 lower = 65; # lower bound of fragment size selection
 upper = 195; # upper bound of fragment size selection
 winSize = 1000000 # window size to be used to sample SNP density
@@ -40,6 +40,10 @@ writeOutput = true; # true if outputs in text file are required
 onlyOutputGBS = true; # true if only GBS data is required
 
 ## Run SimGBS
+## Note: Please maker sure that your working directory is same as where you've downloaed input files!
+## You can use pwd() to check your current working directory
+## or cd() to change your working directory 
+
 ### Step One: Generate GBS Fragments
 @time digestGenome(
     genofile,
