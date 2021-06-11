@@ -8,7 +8,7 @@
 [![GitHub license](https://img.shields.io/github/license/AgResearch/snpGBS?style=flat-square)](https://github.com/AgResearch/snpGBS/blob/main/LICENSE)
 
 
-## Introduction 
+## Introduction
 
 SimGBS is a versatile method of simulating  [Genotyping-by-Sequencing (GBS)](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0019379) data. It can be implemented with any genome of choice. Users can modify different parameters to customise GBS setting, such as the choice of [restriction enzyme](https://en.wikipedia.org/wiki/Restriction_enzyme#Examples) and [sequencing depth](https://www.nature.com/articles/nrg3642). By taking the [gene-drop](https://academic.oup.com/g3journal/article/5/7/1415/6025367) approach, users can also specify the demographic history and define population structure (by supplying a pedigree file). Like real sequencers, SimGBS will output data into [FASTQ](https://en.wikipedia.org/wiki/FASTQ_format) format.   
 
