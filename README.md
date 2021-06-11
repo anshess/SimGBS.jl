@@ -23,7 +23,7 @@ julia> import Pkg;Pkg.add("SimGBS")
 or simply
 
 ```julia
-julia> ]
+julia> ] 
 pkg> add SimGBS
 ```
 
