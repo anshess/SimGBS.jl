@@ -2,8 +2,8 @@ using Documenter, SimGBS
 
 
 makedocs(
- # modules = [SimGBS], 
- # sitename = "SimGBS.jl",
+ modules = [SimGBS], 
+ sitename = "SimGBS.jl",
  # pages = ["Home" => "index.md"]
 )
 
