@@ -171,7 +171,6 @@ Following outputs will be returned
  - `ABC12AAXX\_1\_fastq.txt.gz`: simulated GBS sequences
 
 
-
 ## What's Next?
 
 The following tools are recommended for downstream Analyses of GBS data,
