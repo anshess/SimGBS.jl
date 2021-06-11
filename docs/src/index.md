@@ -84,6 +84,11 @@ The following files are required for running SimGBS
 
 To help users with testing SimGBS, an example script and associated input files can be found on [GitHub](https://github.com/kanji709/SimGBS.jl/tree/master/example) or [figshare](https://figshare.com/articles/dataset/SimGBS_jl/14672343).  
 
+Note that input files must be stored in the working directory, please use the folloiwng commands to check/change your current working directory.
+```julia
+julia> pwd()
+julia> cd()
+```
 
 ### Usage and Options
 
