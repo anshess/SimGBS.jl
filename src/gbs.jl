@@ -27,7 +27,7 @@ function sampleSNPPosition(totalSNP::Int64, winSize::Int64, mu::Float64, sigmasq
             density = exp.(rand(Laplace(mu, sigmasq), numWin)) # sample SNP density for each window
             win = fill(winSize, numWin) # generate a vector (with length = numWin) contating windown size for each window
             winPos = [0; cumsum(win)[1:end-1]] # starting postion of each window
-            sam = [rand(Bernoulli(1.5*density[i]), winSize) for i = 1:numWin] # sampling the occurence of SNP at each bp using local SNP density (sampled from Gamma model for each win)
+            sam = [rand(Bernoulli(1.4*density[i]), winSize) for i = 1:numWin] # sampling the occurence of SNP at each bp using local SNP density (sampled from Gamma model for each win)
             sam2 = map(x -> findall(x .> 0), sam) # record SNP positions within each window
             sam3 = reduce(vcat, [sam2[i] .+ winPos[i] for i = 1:numWin]) # calcualte SNP position within chromosome
             numSampled = length(sam3) # number of sampled SNP postions
@@ -204,7 +204,7 @@ function sampleReadDepth(numLoci::Int64, numInd::Int64, meanDepth::Float64)
     @. model(x, p) = p[1] / (1 + exp(-(x - p[2]) * p[3]))
     p0 = [1, 0.5, 5]
     fit_cr = curve_fit(model, dp, cr, p0)
-    xm = rand(Exponential(0.75), numLoci) # rand(Uniform(-1,1), numLoci)
+    xm = rand(Exponential(0.3), numLoci) # rand(Uniform(-1,1), numLoci)
     for i = 1:numLoci
         par1 = fit_cr.param[1]
         par2 = fit_cr.param[2]
@@ -252,7 +252,7 @@ end
 
 Simulate Genotyping-by-Sequencing (GBS) data.
 
-This function generates GBS reads by inserting genomic variants into in slico digested genomic fragments, ligate the polymorphic sequence with barcodes and replicate based on sequencing depth.
+This function generates GBS reads by inserting genomic variants into _in silico_ digested genomic fragments, ligates the polymorphic sequence with barcodes and replicates based on sequencing depth.
 
 # Arguments
 * `totalQTL`: total number of QTL to be simulated
@@ -264,7 +264,7 @@ This function generates GBS reads by inserting genomic variants into in slico di
 * `sigmasqAlleleFreq`: variance of sampled allele frequency
 * `re`: restriction enzyme(s) to be used
 * `barcodeFile`: file containing GBS barcodes
-* `useChr`: either the number of chromosome or a set of chromosome(s) to be simulated
+* `useChr`: either the number of chromosomes or a set of chromosome(s) to be simulated
 * `plotOutput`: set to true if graphical outputs are required
 * `writeOutput`: set to true if text outputs are required
 * `onlyOutputGBS`: set to true if only GBS data is kept
@@ -404,7 +404,7 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
                  writedlm(io,["@SIM001:001:ABC12AAXX:$lane:0000:0000:$r 1:N:0:0\n" * totalReads[r] * "\n+\n" * repeat("I", length(totalReads[r])) for r in 1:length(totalReads)], quotes = false)
              end
          end
-         println("INFO: A total of $numReadsTotal GBS reads genertaed.")
+         println("INFO: A total of $numReadsTotal GBS reads generated.")
          close(io)
      end
      ## 3. GBS data

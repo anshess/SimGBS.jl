@@ -79,7 +79,7 @@ function changingPopSize(founders, endSize::Int64, numGen::Int64)
         offSpring = [sampleOffspring(parents[sample(1:(size(parents, 1)), 1)[1]], parents[sample(1:(size(parents, 1)), 1)[1]]) for i = 1:popSize[gen]]
         parents = deepcopy(offSpring)
         if gen % 10 == 0
-            println("CHANING POP SIZE GEN $gen: Done!")
+            println("CHANGING POP SIZE GEN $gen: Done!")
         end
     end
     parents
@@ -156,13 +156,13 @@ This function generates different population structure, and there is an option t
 * `numGenCha`: number of generations for changingPopSize function
 * `numGenCon`: number of generations for constantPopSize function
 * `numGenFinal`: number of final generations to be used to select individual
-* `useWeights`: weights of each of contributing genetarion in the fianal population composition
+* `useWeights`: weights of each contributing genetarion in the final population composition
 * `usePedigree`: set to false if you don't use pedigree, otherwise specify the pedigree file to be used
-* `pedFile`: pedigree file 
+* `pedFile`: pedigree file
 * `pedOutput`: set to true if return pedigree output
 
 # Notes
-* Please consider modify the combination of constant and changing population (as well as combining multiple populations) when defining complicated population structure.
+* Please consider modifyin the combination of constant and changing population (as well as combining multiple populations) when defining complicated population structure.
 
 # Examples
 ```julia
