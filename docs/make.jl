@@ -1,5 +1,3 @@
-push!(LOAD_PATH,"../src/")
-
 using Documenter, SimGBS
 
 
@@ -9,6 +7,4 @@ makedocs(
   pages = ["Home" => "index.md"]
 )
 
-deploydocs(
-  repo = "github.com/kanji709/SimGBS.jl.git",
-)
+deploydocs(repo = "github.com/kanji709/SimGBS.jl.git")
