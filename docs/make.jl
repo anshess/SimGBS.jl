@@ -8,7 +8,8 @@ makedocs(
 )
 
 
+deploy_config = "GitHubActions"
+
 deploydocs(
- deploy_config = "GitHubActions",
  repo = "github.com/kanji709/SimGBS.jl.git"
 )
