@@ -1,18 +1,19 @@
 name: CI
 on:
-  pull_request:
-    branches:
-      - master
-    paths-ignore:
-      - "README.md"
-      - "LICENSE"
-  push:
-    branches:
-      - master
-    paths-ignore:
-      - "README.md"
-      - "LICENSE"
-    tags: '*'
+  workflow_dispatch:
+  # pull_request:
+  #  branches:
+  #    - master
+  #  paths-ignore:
+  #    - "README.md"
+  #    - "LICENSE"
+  # push:
+  # branches:
+  #    - master
+  #  paths-ignore:
+  #    - "README.md"
+  #    - "LICENSE"
+  #  tags: '*'
     
     
 jobs:
@@ -65,12 +66,6 @@ jobs:
           version: '1.4'
       - name: Install dependencies
         run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      - name: Install dependencies
-        run: |
-            julia --project=docs -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For authentication with GitHub Actions token
