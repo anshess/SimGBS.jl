@@ -173,7 +173,7 @@ Following outputs will be returned
 
 ## What's Next?
 
-The following tools are recommended for downstream Analyses of GBS data,
+The following tools are recommended for downstream analyses of GBS data,
 
 - [**snpGBS**](https://github.com/AgResearch/snpGBS): a simple bioinformatics workflow to identify single nucleotide polymorphism (SNP) from Genotyping-by-Sequencing (GBS) data.
 
