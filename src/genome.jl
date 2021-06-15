@@ -9,11 +9,16 @@ mutable struct restrictionEnzyme
 end
 
 ## list of restraiction enzymes
+## single-digest
 ApeKI = restrictionEnzyme("ApeKI", ["GCAGC", "GCTGC"], [2, 2], ["CTG", "CAG"]); # Elshire et al. 2011
+SbfI = restrictionEnzyme("SbfI", ["CCTGCAGG"], [3], ["TGCA"]);# Elshire et al. 2011
 PstI = restrictionEnzyme("PstI", ["CTGCAG"], [2], ["TGCA"]); # Poland et al. 2012
 MspI = restrictionEnzyme("MspI", ["CCGG"], [2], ["CGG"]); # Poland et al. 2012
-PstI_MspI = restrictionEnzyme("PstI-MspI", ["CTGCAG", "CCGG"], [2, 2], ["TGCA", "CGG"]); # Poland et al. 2012
 
+
+## double-digest
+PstI_MspI = restrictionEnzyme("PstI-MspI", ["CTGCAG", "CCGG"], [2, 2], ["TGCA", "CGG"]); # Poland et al. 2012
+SbfI_MspI = restrictionEnzyme("SbfI-MspI", ["CCTGCAGG", "CCGG"], [2, 2], ["TGCA", "CGG"]); # Poland et al. 2012
 
 ## nucleotides and its complements
 "nucleotides"
