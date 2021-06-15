@@ -64,3 +64,15 @@ For more information, please visit the [documentation](https://kanji709.github.i
 Please cite the following if you use `SimGBS.jl`,
 
 - [Hess, A. S., M. K. Hess, K. G. Dodds, J. C. Mcewan, S. M. Clarke, and S. J. Rowe. "A method to simulate low-depth genotyping-by-sequencing data for testing genomic analyses." Proc 11th World Congr Genet Appl to Livest Prod 385 (2018)](https://www.researchgate.net/publication/325012536_A_method_to_simulate_low-depth_genotyping-by-sequencing_data_for_testing_genomic_analyses).
+
+## What's Next?
+
+The following tools are recommended for downstream analyses of GBS data,
+
+- [**snpGBS**](https://github.com/AgResearch/snpGBS): a simple bioinformatics workflow to identify single nucleotide polymorphism (SNP) from Genotyping-by-Sequencing (GBS) data.
+
+- [**KGD**](https://github.com/AgResearch/KGD): R code for the analysis of genotyping-by-sequencing (GBS) data, primarily to construct a genomic relationship matrix for the genotyped individuals.   
+
+- [**GUSLD**](https://github.com/AgResearch/GUS-LD): An R package for estimating linkage disequilibrium using low and/or high coverage sequencing data without requiring filtering with respect to read depth.
+
+- [**SMAP**](https://gitlab.com/truttink/smap) a software package that analyzes read mapping distributions and performs haplotype calling to create multi-allelic molecular markers.
