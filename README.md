@@ -64,7 +64,7 @@ For more information, please visit the [documentation](https://kanji709.github.i
 
 Please cite the following if you use `SimGBS.jl`,
 
-- [Hess, A. S., M. K. Hess, K. G. Dodds, J. C. Mcewan, S. M. Clarke, and S. J. Rowe. "A method to simulate low-depth genotyping-by-sequencing data for testing genomic analyses." Proc 11th World Congr Genet Appl to Livest Prod 385 (2018)](https://www.researchgate.net/publication/325012536_A_method_to_simulate_low-depth_genotyping-by-sequencing_data_for_testing_genomic_analyses).
+- [Hess, A. S., M. K. Hess, K. G. Dodds, J. C. McEwan, S. M. Clarke, and S. J. Rowe. "A method to simulate low-depth genotyping-by-sequencing data for testing genomic analyses." Proc 11th World Congr Genet Appl to Livest Prod 385 (2018)](https://www.researchgate.net/publication/325012536_A_method_to_simulate_low-depth_genotyping-by-sequencing_data_for_testing_genomic_analyses).
 
 ## What's Next?
 
