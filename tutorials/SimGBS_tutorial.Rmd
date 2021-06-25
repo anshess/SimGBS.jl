@@ -23,14 +23,13 @@ library(JuliaCall)
 knitr::opts_chunk$set(echo = TRUE)
 
 ##Standard call for julia installation
-#julia_setup( installJulia = TRUE)
+julia_setup( installJulia = TRUE)
 
 ##If you want to set path where the folder that contains Julia binary is/should be located, run this instead:
-julia_setup(JULIA_HOME = "D:\\R/v1.5.0/bin/", installJulia = TRUE) #change path
+#julia_setup(JULIA_HOME = "D:\\R/v1.5.0/bin/", installJulia = TRUE) #change path
 ```
 
-Optional setup for users that want to set their own path to Julia packages. Must be run each time.
-
+Optional setup for users that want to set their own path to Julia packages. Must be run each time:
 ```{julia}
 Base.DEPOT_PATH[1] = "D:\\R" #example of a path
 Base.DEPOT_PATH[1]
