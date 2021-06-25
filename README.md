@@ -1,4 +1,4 @@
-<img src="https://github.com/kanji709/SimGBS.jl/blob/akonkia-patch-2/docs/simgbs_logo.svg" width="250">
+<img src="https://github.com/kanji709/SimGBS.jl/blob/akonkia-patch-2/docs/simgbs_logo.svg" width="200">
 
 ## SimGBS: A Julia Package to Simulate Genotyping-by-Sequencing (GBS) Data  
 
