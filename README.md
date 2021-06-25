@@ -60,6 +60,7 @@ etc.
 ## Overview
 
 For more information, please visit the [documentation](https://kanji709.github.io/SimGBS.jl/dev/) page.
+For examples of SimGBS use, head over to our [tutorials](https://github.com/kanji709/SimGBS.jl/tree/master/tutorials) section.
 
 
 ## Citation
