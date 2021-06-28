@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
-   sodipodi:docname="drawing.svg"
+   sodipodi:docname="simgbs_logo.svg"
    inkscape:export-filename="D:\simgbs_logo.png"
    inkscape:export-xdpi="1130.65"
    inkscape:export-ydpi="1130.65">
@@ -141,15 +141,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2"
-     inkscape:cx="171.12878"
-     inkscape:cy="64.000002"
+     inkscape:cx="96.12878"
+     inkscape:cy="52.284273"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1366"
-     inkscape:window-height="705"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
      inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-y="91"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
@@ -285,9 +285,10 @@
          inkscape:connector-curvature="0" />
       <path
          id="rect880-4"
-         d="m 50.072632,93.384277 h 5.589274 v 6.922283 h -5.589274 z"
+         d="m 50.072632,93.384277 h 5.589274 v 2.645221 l -5.589274,4.277062 z"
          style="fill:#ffffff;fill-opacity:1;stroke-width:0.26458332"
-         inkscape:connector-curvature="0" />
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccc" />
     </g>
     <rect
        style="opacity:0;fill:#ffffff;fill-opacity:1;stroke-width:0.74509025"
