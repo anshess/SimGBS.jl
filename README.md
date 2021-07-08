@@ -1,5 +1,8 @@
+<img src="https://github.com/kanji709/SimGBS.jl/blob/akonkia-patch-2/docs/simgbs_logo.svg" width="200">
+
 ## SimGBS: A Julia Package to Simulate Genotyping-by-Sequencing (GBS) Data  
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kanji709/SimGBS.jl/blob/akonkia-patch-1/tutorials/SimGBS_Julia_Colab_Notebook.ipynb#scrollTo=qxAz-9VnvRVa)
 [![latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://kanji709.github.io/SimGBS.jl/dev/)
 [![Build Status](https://github.com/kanji709/SimGBS.jl/workflows/CI/badge.svg)](https://github.com/kanji709/SimGBS.jl/actions)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/kanji709/SimGBS.jl?color=purple&style=flat-square)
@@ -57,13 +60,14 @@ etc.
 ## Overview
 
 For more information, please visit the [documentation](https://kanji709.github.io/SimGBS.jl/dev/) page.
+For examples of SimGBS use, head over to our [tutorials](https://github.com/kanji709/SimGBS.jl/tree/master/tutorials) section.
 
 
 ## Citation
 
 Please cite the following if you use `SimGBS.jl`,
 
-- [Hess, A. S., M. K. Hess, K. G. Dodds, J. C. Mcewan, S. M. Clarke, and S. J. Rowe. "A method to simulate low-depth genotyping-by-sequencing data for testing genomic analyses." Proc 11th World Congr Genet Appl to Livest Prod 385 (2018)](https://www.researchgate.net/publication/325012536_A_method_to_simulate_low-depth_genotyping-by-sequencing_data_for_testing_genomic_analyses).
+- [Hess, A. S., M. K. Hess, K. G. Dodds, J. C. McEwan, S. M. Clarke, and S. J. Rowe. "A method to simulate low-depth genotyping-by-sequencing data for testing genomic analyses." Proc 11th World Congr Genet Appl to Livest Prod 385 (2018)](https://www.researchgate.net/publication/325012536_A_method_to_simulate_low-depth_genotyping-by-sequencing_data_for_testing_genomic_analyses).
 
 ## What's Next?
 
