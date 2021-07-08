@@ -60,7 +60,7 @@ etc.
 ## Overview
 
 For more information, please visit the [documentation](https://kanji709.github.io/SimGBS.jl/dev/) page.
-For examples of SimGBS use, head over to our [tutorials](https://github.com/kanji709/SimGBS.jl/tree/master/tutorials) section.
+For examples of SimGBS use, head over to our [**tutorials**](https://github.com/kanji709/SimGBS.jl/tree/master/tutorials) section.
 
 
 ## Citation
@@ -80,3 +80,5 @@ The following tools are recommended for downstream analyses of GBS data,
 - [**GUSLD**](https://github.com/AgResearch/GUS-LD): An R package for estimating linkage disequilibrium using low and/or high coverage sequencing data without requiring filtering with respect to read depth.
 
 - [**SMAP**](https://gitlab.com/truttink/smap) a software package that analyzes read mapping distributions and performs haplotype calling to create multi-allelic molecular markers.
+
+We have created a demonstration of the **snpGBS-KGD pipeline**, available in the following notebook: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/akonkia/snpGBS/blob/main/tutorials/snpGBS.ipynb)
