@@ -2,7 +2,7 @@
 
 ## SimGBS: A Julia Package to Simulate Genotyping-by-Sequencing (GBS) Data  
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kanji709/SimGBS.jl/blob/akonkia-patch-1/tutorials/SimGBS_Julia_Colab_Notebook.ipynb#scrollTo=qxAz-9VnvRVa)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kanji709/SimGBS.jl/blob/akonkia-patch-2/tutorials/SimGBS_Julia_Colab_Notebook.ipynb)
 [![latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://kanji709.github.io/SimGBS.jl/dev/)
 [![Build Status](https://github.com/kanji709/SimGBS.jl/workflows/CI/badge.svg)](https://github.com/kanji709/SimGBS.jl/actions)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/kanji709/SimGBS.jl?color=purple&style=flat-square)
