@@ -81,4 +81,5 @@ The following tools are recommended for downstream analyses of GBS data,
 
 - [**SMAP**](https://gitlab.com/truttink/smap) a software package that analyzes read mapping distributions and performs haplotype calling to create multi-allelic molecular markers.
 
-We have created a demonstration of the **snpGBS-KGD pipeline**, available in the following notebook: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/akonkia/snpGBS/blob/main/tutorials/snpGBS.ipynb)
+We have created a demonstration of the [**snpGBS**](https://github.com/AgResearch/snpGBS)-[**KGD**](https://github.com/AgResearch/KGD) pipeline, available in the following notebook: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/akonkia/snpGBS/blob/main/tutorials/snpGBS.ipynb)
+
