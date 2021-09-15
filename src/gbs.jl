@@ -239,18 +239,19 @@ function sampleReadDepth(numLoci::Int64, numInd::Int64, meanDepth::Float64)
     @. model(x, p) = p[1] / (1 + exp(-(x - p[2]) * p[3]))
     p0 = [1, 0.5, 5]
     fit_cr = curve_fit(model, dp, cr, p0)
-    xm = rand(Gamma(0.8,1/8), numLoci) # rand(Uniform(-1,1), numLoci)
+    add_var1 = rand(Normal(0,0.01), numLoci)
+	add_var3 = rand(Beta(0.5,1), numLoci) # rand(Uniform(-1,1), numLoci)
     for i = 1:numLoci
         par1 = fit_cr.param[1]
         par2 = fit_cr.param[2]
         par3 = fit_cr.param[3]
-        output = par1 / (1 + exp(-(dp[i] - par2 - xm[i]) * par3))
+        output = (1.1 - add_var1[i]) / (1 + exp(-(dp[i] - par2 - add_var3[i]) * par3))
         if output > 1
             output = 1
         end
-        if output > cr[i]
-            output = cr[i]
-        end
+        #if output > cr[i]
+        #    output = cr[i]
+        #end
         zeros = findall(x -> x == 0, depthMat[:, i]) #depthMat[i, sample([1:numLoci...],Int(round(numLoci*rand(Laplace(1-callRate,0.sigmasqCallRate),1))), replace=false)] .= 0
         newzeros = Int64(floor((1 - output) * numInd))
         potentials = deleteat!([1:numInd...], zeros)
@@ -375,7 +376,7 @@ function GBS(totalQTL::Int64, totalSNP::Int64, muSNPdensity::Float64, sigmasqSNP
      hapEnd = cumsum(numSNP) .+1
      #### 2.2.2 genearte FASTQ file(s)
      flowcell = "ABC12AAXX" # flowcell name
-     multiplex = 384 # number of samples per lane
+     multiplex = 192 # 384 number of samples per lane
      numLane = Int(ceil(totalInd/multiplex)) # numebr of lanes in total
      for lane in 1:numLane
          if totalInd < multiplex*lane
