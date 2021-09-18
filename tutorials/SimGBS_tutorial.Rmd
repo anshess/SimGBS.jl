@@ -1,0 +1,232 @@
+---
+title: "SimGBS with Julia - tutorial"
+output: html_notebook
+---
+
+### Introduction
+
+<b>SimGBS</b> is a versatile method of <b>simulating Genotyping-By-Sequencing data (GBS)</b>. It can be implemented with any genome of choice. Users can modify different parameters to customise GBS setting, such as the choice of restriction enzyme and sequencing depth. By taking the gene-drop approach, users can also specify the demographic history and define population structure (by supplying a pedigree file). Like real sequencers, SimGBS will output data into FASTQ format.
+
+SimGBS is built in <b>Julia</b> and can be run when Julia is installed on the machine. For bigger analysis, we strongly recommend running SimGBS in Julia directly. 
+
+In this tutorial, we are showing how you can access SimGBS from within the RStudio by using the <b>JuliaCall</b> R package that wraps Julia calls to make them compatible with RMarkdown.
+
+
+### Setup environment
+
+Run the code chunk below to setup Julia.
+
+```{r setup}
+if (!require(JuliaCall)) install.packages('JuliaCall')
+
+library(JuliaCall)
+knitr::opts_chunk$set(echo = TRUE)
+
+##Standard call for julia installation
+julia_setup( installJulia = TRUE)
+
+##If you want to set path where the folder that contains Julia binary is/should be located, run this instead:
+#julia_setup(JULIA_HOME = "D:\\R/v1.5.0/bin/", installJulia = TRUE) #change path
+```
+
+Optional setup for users that want to set their own path to Julia packages. Must be run each time:
+```{julia}
+Base.DEPOT_PATH[1] = "D:\\R" #example of a path
+Base.DEPOT_PATH[1]
+```
+```{julia}
+#Store the current working directory from Julia. The working directories might differ between Julia and R, it might be best to ensure they are synchronized.
+dir = pwd()
+```
+
+### Download example files
+
+- ref.fa.gz - reference genome of the target species in FASTA format (it can be provided in e.g., xxx.fasta.gz/xxx.fa.gz). The example file contains.....
+
+- GBS_Barcodes.txt - file storing a list of Illumina barcodes.
+
+- (optional) example.jl - script containing the entire code necessary to run the SimGBS example.
+
+- (optional) pedigree File (e.g. small.ped)  #### not added to RMD as of now, not tested yet.
+
+```{r}
+if(!file.exists("ref.fa.gz")){
+  download.file(url="https://ndownloader.figshare.com/files/26074529", destfile = "ref.fa.gz")
+}
+
+if(!file.exists("GBS_Barcodes.txt")){
+  download.file(url="https://raw.githubusercontent.com/kanji709/SimGBS.jl/master/example/GBS_Barcodes.txt", destfile = "GBS_Barcodes.txt")
+}
+
+if(!file.exists("example.jl")){
+  download.file(url="https://raw.githubusercontent.com/kanji709/SimGBS.jl/master/example/example.jl", destfile = "example.jl")
+}
+
+```
+
+Set the current working directory to be the same for julia and R.
+```{r}
+setwd(julia_eval("dir")) #example of a call that accesses julia variable in R.
+getwd()
+```
+
+### Add SimGBS package for use in julia.
+
+```{julia echo=TRUE}
+import Pkg;Pkg.add("SimGBS")
+```
+
+### Run SimGBS
+
+The code below has been pasted from [example.jl](https://github.com/kanji709/SimGBS.jl/blob/master/example/example.jl)
+```{julia echo=TRUE}
+using SimGBS
+## parameters
+### Step One: Generate GBS Fragments
+genofile = "ref.fa.gz"
+re = [SimGBS.ApeKI]; # specify the restriction enzyme to be used for virtual digestion
+useChr = [1]; # specify either the number of chromosome(s) or a set of chromosome(s) to be used for simulating GBS data
+useChrLen = Array{Float64}(undef, 0); # specify the length of chromsome(s) in cM to be simulated, otherwise using the entire chromosome
+lower = 65; # lower bound of fragment size selection
+upper = 195; # upper bound of fragment size selection
+winSize = 1000000 # window size to be used to sample SNP density
+
+### Step Two: Define Population Structure
+numFounders = 100; # number of founders in the base population
+endSize = 1000; # number of individuals to end up in the changingPopSize step
+numGenCha = 20; # number of generations for changingPopSize function 
+numGenCon = 50; # number of generations for constantPopSize function 
+numGenFinal = 4; # number of final generations to be used to select individual 
+numInd = 96; # number of individuals to be simulated
+useWeights = Array{Float64}(undef, 0) # weights of each of contributing genetarion in the fianal population composition 
+usePedigree = false;  # false if you don't use pedigree, otherwise specify the pedigree file to be used
+pedFile = "newPed.ped"; # file stores the pedigree (default = "sim.ped")
+pedOutput = false; # true if print out pedigree (default = false)
+
+### Step Three: Simulate GBS Process
+totalQTL = 100 # total (across all chromosomes) number of QTLs to be simulated
+totalSNP = 0 # total (across all chromosomes) number of QTLs to be simulated, set [totalSNP = 0] if sampling based on density
+muDensity = -2.0 # location parameter of log-Laplace distribution (for sampling SNP density)
+sigmasqDensity = 0.001 # scale parameter of log-Laplace distribution (for sampling SNP density)
+winSize = 1000000 # window size to be used to sample SNP density
+muAlleleFreq = 0.5 # mean of sampled allele frequency
+sigmasqAlleleFreq = 0.0061 # variance of sampled allele frequency
+meanDepth = 20.0 # expected sequencing depth
+barcodeFile = "GBS_Barcodes.txt" # file contains GBS barcodes
+useChr = [1]; # specify either the number of chromosome(s) or a set of chromosome(s) to be used for simulating GBS data 
+
+### miscellaneous
+plotOutput = true; # true if plots are required
+writeOutput = true; # true if outputs in text file are required
+onlyOutputGBS = true; # true if only GBS data is required
+
+## Run SimGBS
+### Step One: Generate GBS Fragments
+@time digestGenome(
+    genofile,
+    re,
+    useChr,
+    useChrLen,
+    lower,
+    upper,
+    winSize,
+    plotOutput,
+    writeOutput,
+);
+
+### Step Two: Define Population Structure
+@time definePopulation(
+    numFounders,
+    endSize,
+    numGenCha,
+    numGenCon,
+    numGenFinal,
+    numInd,
+    useWeights,
+    usePedigree,
+    pedFile,
+    pedOutput,
+);
+
+### Step Three: Simulate GBS Process
+@time GBS(
+    totalQTL,
+    totalSNP,
+    muDensity,
+    sigmasqDensity,
+    winSize,
+    muAlleleFreq,
+    sigmasqAlleleFreq,
+    re,
+    meanDepth,
+    barcodeFile,
+    useChr,
+    plotOutput,
+    writeOutput,
+    onlyOutputGBS,
+);
+
+```
+
+### Outputs
+
+<b>GBS Fragments</b>
+
+- RawFrag.txt: raw GBS fragments following in slico digestion
+- GBSFrag.txt: selected GBS fragments after fragment size-selection
+- GBSCoverage.txt: genomic coverage of GBS fragments
+- snpFragGBS.txt: GBS fragments that contains SNPs
+
+<b>Variants</b>
+
+- qtlGeno.txt: QTL genotype (number of individual x number of QTL loci)
+- snpGeno.txt: SNP genotypes (number of individual x number of QTL loci)
+- qtlInfo.txt: information about QTL, including chromosome, position and allele frequency
+- snpInfo.txt: information about SNPs, including chromosome, position and allele frequency
+- shortHap.txt: short-haplotype created by GBS fragments (i.e., SNPs captured within each GBS fragment)
+- readDepth.txt: number of copies per GBS fragment
+
+<b>GBS Data</b>
+
+- keyFileABC12AAXX1.txt: pseudo-information about GBS sample, including flowcell, lane, barcode, sample name, plate, row and column
+- ABC12AAXX1fastq.txt.gz: simulated GBS sequences
+
+```{julia}
+readdir() # see outputs
+```
+
+
+```{r}
+if (!require(magick)) install.packages('magick')
+library(magick)
+GBSCoverage <- image_read('./GBSCoverage.png')
+plot(GBSCoverage)
+GBSFragSize <- image_read('./GBSFragSize.png')
+plot(GBSFragSize)
+RawFragSize <- image_read('./RawFragSize.png')
+plot(RawFragSize)
+```
+
+
+### Overview
+
+For more information, please visit the [documentation](https://kanji709.github.io/SimGBS.jl/dev/) page.
+
+### Citing
+
+Please cite the following if you use SimGBS.jl,
+
+- Hess, A. S., M. K. Hess, K. G. Dodds, J. C. Mcewan, S. M. Clarke, and S. J. Rowe. "A method to simulate low-depth genotyping-by-sequencing data for testing genomic analyses." Proc 11th World Congr Genet Appl to Livest Prod 385 (2018).
+
+### What is next?
+
+
+The following tools are recommended for downstream analysis of GBS data,
+
+[snpGBS](https://github.com/AgResearch/snpGBS): a simple bioinformatics workflow to identify single nucleotide polymorphism (SNP) from Genotyping-by-Sequencing (GBS) data.
+
+[KGD](https://github.com/AgResearch/KGD): R code for the analysis of genotyping-by-sequencing (GBS) data, primarily to construct a genomic relationship matrix for the genotyped individuals.
+
+[GUSLD](https://github.com/AgResearch/GUS-LD): An R package for estimating linkage disequilibrium using low and/or high coverage sequencing data without requiring filtering with respect to read depth.
+
+[SMAP](https://gitlab.com/truttink/smap) a software package that analyzes read mapping distributions and performs haplotype calling to create multi-allelic molecular markers.
