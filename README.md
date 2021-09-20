@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## SimGBS: A Julia Package to Simulate Genotyping-by-Sequencing (GBS) Data  
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kanji709/SimGBS.jl/blob/akonkia-patch-1/tutorials/SimGBS_Julia_Colab_Notebook.ipynb#scrollTo=qxAz-9VnvRVa)
@@ -161,4 +160,3 @@ The following tools are recommended for downstream analyses of GBS data,
 - [**GUSLD**](https://github.com/AgResearch/GUS-LD): An R package for estimating linkage disequilibrium using low and/or high coverage sequencing data without requiring filtering with respect to read depth.
 
 - [**SMAP**](https://gitlab.com/truttink/smap) a software package that analyzes read mapping distributions and performs haplotype calling to create multi-allelic molecular markers.
->>>>>>> 73f6b5f0613b16b1c97a2eb31f4a5f41beab186b
