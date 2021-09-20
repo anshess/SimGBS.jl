@@ -51,8 +51,8 @@ function sampleAlleleFrequency(numLoci::Array{Int64}, mu::Float64, sigmasq::Floa
     alpha = (-beta * mu) / (mu - 1) # (mu * (1 - mu) / sigmasq -1) * mu # (-beta * mu) / (mu - 1)
     af = Array{Float64}(undef, 0)
     for c = 1:size(numLoci, 1)
-		tmp = rand(Beta(alpha, beta), numLoci[c] *3)
-        af = [af; [tmp[(tmp .> 0.05) .& (tmp .< 0.95)][1:numLoci[c]]]] # sample allele frequency from a Beta distribution
+        tmp = rand(Beta(alpha, beta), numLoci[c] * 3)
+        af = [af; [tmp[(tmp.>0.05).&(tmp.<0.95)][1:numLoci[c]]]] # sample allele frequency from a Beta distribution
     end
     af
 end
