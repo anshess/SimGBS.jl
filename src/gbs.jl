@@ -47,8 +47,8 @@ end
 
 "function to sample variants (incl. SNP and QTL) allele frequency"
 function sampleAlleleFrequency(numLoci::Array{Int64}, mu::Float64, sigmasq::Float64)
-    alpha = 0.953 # (mu * (1 - mu) / sigmasq -1) * mu # (-beta * mu) / (mu - 1)
-    beta = 3.631 #(mu * (1 - mu) / sigmasq -1) * (1 - mu) # ((mu - 1) * (mu^2 - mu + sigmasq)) / (sigmasq)
+    beta = ((mu - 1) * (mu^2 - mu + sigmasq)) / (sigmasq) # (mu * (1 - mu) / sigmasq -1) * (1 - mu) 
+	alpha =  (-beta * mu) / (mu - 1) # (mu * (1 - mu) / sigmasq -1) * mu # (-beta * mu) / (mu - 1)
     af = Array{Float64}(undef, 0)
     for c = 1:size(numLoci, 1)
         af = [af; [rand(Beta(alpha, beta), numLoci[c])]] # sample allele frequency from a Beta distribution
