@@ -29,6 +29,19 @@ function generateFounders(numFounders::Int64)
     end
     f
 end
+function generateFounders(numFounders::Int64,numChr::Int64)
+    nChr = 2 * numFounders # each founder has two chromosomes
+    f = Array{individual}(undef, numFounders)
+    ## define founder chromosomes
+    for i = 1:size(f, 1)
+        f[i] = individual(
+            i,
+            [chromosome([0.0], [2 * i - 1]) for c = 1:numChr],
+            [chromosome([0.0], [2 * i]) for c = 1:numChr],
+        )
+    end
+    f
+end
 
 "function to sample chromosomes of each offSpring"
 function sampleChromosome(ind)
