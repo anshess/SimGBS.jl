@@ -174,7 +174,7 @@ function constantPopSize(
 end
 
 "function to generate popluation at a FIXED size for a certain number (=numGen) of geneartions"
-constantPopSize = function(founders::Array{individual,1},numGen,chrLength_cM,numChr)
+constantPopSize = function(founders::Array{individual,1},numGen::Int64,chrLength_cM::Vector{Float64},numChr::Int64)
     parents = copy(founders)
     for gen in 1:numGen
         offSpring = [sampleOffspring(parents[sample(1:(size(parents,1)),1)[1]],parents[sample(1:(size(parents,1)),1)[1]],chrLength_cM,numChr) for i in 1:size(founders,1)]
