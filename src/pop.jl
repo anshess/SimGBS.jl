@@ -155,16 +155,16 @@ end
 function sampleOffspring(sire, dam, id = indCount[1])
     sireChrs = sampleChromosome(sire)
     damChrs = sampleChromosome(dam)
-    indCount[1] = id + 1
+    indCount[1] = indCount[1] + 1
     off = individual(id, damChrs, sireChrs)
     off
 end
 
 "function to generate offSpring"
-function sampleOffspring(sire::SimGBS.individual, dam::SimGBS.individual, chrLength_cM::Vector{Float64}, numChr::Int64, id = indCount[1])
+function sampleOffspring(sire::SimGBS.individual, dam::SimGBS.individual, chrLength_cM::Vector{Float64}, numChr::Int64, id::Int64)
     sireChrs = sampleChromosome(sire, chrLength_cM, numChr)
     damChrs = sampleChromosome(dam, chrLength_cM, numChr)
-    indCount[1] = id + 1
+    id = id + 1
     off = individual(id, damChrs, sireChrs)
     off
 end
