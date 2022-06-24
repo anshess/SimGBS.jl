@@ -160,6 +160,16 @@ function sampleOffspring(sire, dam, id = indCount[1])
     off
 end
 
+"function to generate offSpring"
+function sampleOffspring(sire, dam, chrLength_cM, numChr)
+    id = indCount[1]
+    sireChrs = sampleChromosome(sire, chrLength_cM, numChr)
+    damChrs = sampleChromosome(dam, chrLength_cM, numChr)
+    indCount[1] = indCount[1] + 1
+    off = individual(id, damChrs, sireChrs)
+    off
+end
+
 "function to generate a new population at a SPECIFIED size (= endSize) through a certain number (= numGen) of geneartions"
 function changingPopSize(founders, endSize::Int64, numGen::Int64)
     startSize = size(founders, 1)
