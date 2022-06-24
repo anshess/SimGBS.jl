@@ -155,7 +155,7 @@ end
 function sampleOffspring(sire, dam, id = indCount[1])
     sireChrs = sampleChromosome(sire)
     damChrs = sampleChromosome(dam)
-    indCount[1] = indCount[1] + 1
+    indCount[1] = id + 1
     off = individual(id, damChrs, sireChrs)
     off
 end
@@ -164,7 +164,7 @@ end
 function sampleOffspring(sire, dam, chrLength_cM, numChr, id = indCount[1])
     sireChrs = sampleChromosome(sire, chrLength_cM, numChr)
     damChrs = sampleChromosome(dam, chrLength_cM, numChr)
-    indCount[1] = indCount[1] + 1
+    indCount[1] = id + 1
     off = individual(id, damChrs, sireChrs)
     off
 end
