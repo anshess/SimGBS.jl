@@ -98,6 +98,59 @@ function sampleChromosome(ind)
     newChrs
 end
 
+"function to sample chromosomes of each offSpring"
+function sampleChromosome(ind,chrLen,numChr::Int64)
+    newChrs = Array{chromosome}(undef, numChr)
+    for c = 1:numChr
+        binomN = Int64(round(chrLen[c] * 3, digits = 0))
+        recombs = sort(
+            Array{Int64}(
+                sample(
+                    1:round(1e8 * chrLen[c] / 100),
+                    rand(Binomial(binomN, chrLen[c] / 100 / binomN)),
+                    replace = false,
+                ),
+            ),
+        )
+        startOrigin = sample(1:2, 1)[1]
+        if size(recombs, 1) == 0
+            if startOrigin == 1
+                newChrs[c] = ind.MatChrs[c]
+            else
+                newChrs[c] = ind.PatChrs[c]
+            end
+        else
+            pos = [ind.MatChrs[c].Position, ind.PatChrs[c].Position]
+            ori = [ind.MatChrs[c].Origin, ind.PatChrs[c].Origin]
+            startPos = 0.0
+            chrPos = Array{Float64}(undef, 0)
+            chrOrig = Array{Int64}(undef, 0)
+            for p in [recombs; 1e8 * chrLen[c] / 100]
+                endPos = p
+                a = [
+                    maximum(
+                        [1:size(pos[startOrigin], 1)...][findall(
+                            pos[startOrigin] .<= startPos,
+                        )],
+                    ):maximum(
+                        [1:size(pos[startOrigin], 1)...][findall(
+                            pos[startOrigin] .< endPos,
+                        )],
+                    )...,
+                ]
+                tmpPos = pos[startOrigin][a]
+                tmpPos[1] = startPos
+                chrPos = [chrPos; tmpPos]
+                chrOrig = [chrOrig; ori[startOrigin][a]]
+                startPos = endPos
+                startOrigin = (startOrigin - 3) * -1
+            end
+            newChrs[c] = chromosome(chrPos, chrOrig)
+        end
+    end
+    newChrs
+end
+
 "function to generate offSpring"
 function sampleOffspring(sire, dam, id = indCount[1])
     sireChrs = sampleChromosome(sire)
