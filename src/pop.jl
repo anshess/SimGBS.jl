@@ -248,7 +248,7 @@ constantPopSize = function(founders,numGen::Int64,chrLength_cM::Array{Float64},n
         end
     end
     parents
-end;
+end
 
 "function to geneate a breeding population follows a user-defined pedigree"
 function samplePedigree(pedFile::String, pedFounders, output::Bool)
