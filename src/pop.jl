@@ -235,6 +235,21 @@ function constantPopSize(
     final
 end
 
+"function to generate popluation at a FIXED size for a certain number (=numGen) of geneartions"
+constantPopSize = function(founders,numGen::Int64,chrLength_cM::Array{Float64},numChr::Int64)
+    parents = copy(founders)
+    nf = size(founders,1)
+    for gen in 1:numGen
+        offSpring = [sampleOffspring(parents[sample(1:(size(parents,1)),1)[1]],parents[sample(1:(size(parents,1)),1)[1]],useChrLen,useChr,i+nf) for i in 1:size(founders,1)]
+        nf = nf + size(founders,1)
+        parents = deepcopy(offSpring)
+        if gen%10 == 0
+            println("Gen $gen: Done")
+        end
+    end
+    parents
+end;
+
 "function to geneate a breeding population follows a user-defined pedigree"
 function samplePedigree(pedFile::String, pedFounders, output::Bool)
     println("INFO: Simulating from the given pedigree file: $pedFile.")
