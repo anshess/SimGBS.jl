@@ -1,4 +1,4 @@
-## This file contains functions and types used for GBS data geneartion
+## This file contains functions and types used for GBS data generation
 "function yp sample QTL positions (randomly across the genome)"
 function sampleQTLPosition(totalQTL::Int64)
     println(
@@ -10,7 +10,7 @@ function sampleQTLPosition(totalQTL::Int64)
     qtlPos
 end
 
-"function to sample SNP positions (either randomly or via a two-stage appraoch)"
+"function to sample SNP positions (either randomly or via a two-stage approach)"
 function sampleSNPPosition(totalSNP::Int64, winSize::Int64, mu::Float64, sigmasq::Float64)
     if totalSNP != 0 ## set totalSNP = 0 to trigger option 1
         println(
