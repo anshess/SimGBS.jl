@@ -1,3 +1,4 @@
+## Main code for running SimGBS
 module SimGBS
 
 export restrictionEnzyme,
