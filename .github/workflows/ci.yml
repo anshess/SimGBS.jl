@@ -1,3 +1,5 @@
+
+
 name: CI
 on:
   push:
@@ -31,6 +33,12 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v2
+      - name: Clean and Re-add Registry
+        run: |
+          rm -rf ~/.julia/registries
+          julia -e 'import Pkg; Pkg.Registry.add("General"); Pkg.Registry.update()'
+      - name: Instantiate Julia Packages
+        run: julia -e 'import Pkg; Pkg.instantiate()'
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1
