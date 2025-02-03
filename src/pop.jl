@@ -31,7 +31,7 @@ function generateFounders(numFounders::Int64)
 end
 
 "function to generate the founding population"
-function generateFounders(numFounders::Int64,numChr::Int64)
+function generateFounders(numFounders::Int64, numChr::Int64)
     nChr = 2 * numFounders # each founder has two chromosomes
     f = Array{individual}(undef, numFounders)
     ## define founder chromosomes
@@ -99,7 +99,7 @@ function sampleChromosome(ind)
 end
 
 "function to sample chromosomes of each offSpring"
-function sampleChromosome(ind,chrLen,numChr::Int64)
+function sampleChromosome(ind, chrLen, numChr::Int64)
     newChrs = Array{chromosome}(undef, numChr)
     for c = 1:numChr
         binomN = Int64(round(chrLen[c] * 3, digits = 0))
@@ -161,7 +161,13 @@ function sampleOffspring(sire, dam, id = indCount[1])
 end
 
 "function to generate offSpring"
-function sampleOffspring(sire::SimGBS.individual, dam::SimGBS.individual, chrLength_cM::Vector{Float64}, numChr::Int64, id::Int64)
+function sampleOffspring(
+    sire::SimGBS.individual,
+    dam::SimGBS.individual,
+    chrLength_cM::Vector{Float64},
+    numChr::Int64,
+    id::Int64,
+)
     sireChrs = sampleChromosome(sire, chrLength_cM, numChr)
     damChrs = sampleChromosome(dam, chrLength_cM, numChr)
     id = id + 1
